@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int       @id @default(autoincrement())
+  readerId      Int?      
+  email         String    @unique
+  passwordHash  String
+  role          String    @default("user")
+  name          String?
+  surname       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  RefreshToken  RefreshToken[]
+}
+
+model RefreshToken {
+  id           Int      @id @default(autoincrement())
+  tokenHash    String   
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+  revoked      Boolean  @default(false)
+
+  @@index([userId])
+}
