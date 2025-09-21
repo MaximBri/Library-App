@@ -19,6 +19,11 @@ app.use(
   })
 )
 
+app.options("*", cors({
+  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+  credentials: true,
+}));
+
 app.use(
   rateLimit({
     windowMs: 60 * 1000,
