@@ -1,0 +1,14 @@
+.input {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 1px solid $text-muted;
+  transition: all 0.3s ease-in-out;
+  background-color: $bg-light;
+  font-size: 20px;
+  &:focus {
+    border-color: $primary;
+  }
+  &:hover {
+    background-color: $bg-card-light;
+  }
+}
