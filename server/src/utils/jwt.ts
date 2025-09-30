@@ -12,7 +12,7 @@ const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh'
 const REFRESH_DAYS = Number(process.env.REFRESH_TOKEN_EXPIRES_IN_DAYS || '30')
 
 export function generateAccessToken(payload: { userId: number; role: string }) {
-  const options: SignOptions = { expiresIn: ACCESS_EXPIRES }
+  const options: SignOptions = { expiresIn: `${ACCESS_EXPIRES}s` }
   return jwt.sign(payload as string | object | Buffer, ACCESS_SECRET, options)
 }
 

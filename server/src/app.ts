@@ -5,6 +5,7 @@ import cors from 'cors'
 import rateLimit from 'express-rate-limit'
 import { authRouter } from './routes/auth'
 import { errorHandler } from './middleware/errorHandler'
+import { libraryRouter } from './routes/library'
 
 export const app = express()
 
@@ -32,6 +33,7 @@ app.use(
 )
 
 app.use('/api/auth', authRouter)
+app.use('/api/libraries', libraryRouter)
 
 app.get('/health', (_req, res) => res.json({ ok: true }))
 

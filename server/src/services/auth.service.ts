@@ -6,6 +6,7 @@ import {
   verifyRefreshToken,
 } from '../utils/jwt'
 import { hashToken, compareTokenHash } from '../utils/hash'
+import z from 'zod'
 
 const prisma = new PrismaClient()
 
@@ -58,18 +59,26 @@ export async function login({
 
 export async function refresh(token: string) {
   const payload = verifyRefreshToken(token)
+
   const tokens = await prisma.refreshToken.findMany({
-    where: { userId: payload.userId, revoked: false },
+    where: {
+      userId: payload.userId,
+      revoked: false,
+      expiresAt: { gt: new Date() },
+    },
+    take: 5,
+    orderBy: { createdAt: 'desc' },
   })
 
   let matched = null
   for (const t of tokens) {
-    const ok = await compareTokenHash(token, t.tokenHash)
-    if (ok) {
+    const isMatch = await compareTokenHash(token, t.tokenHash)
+    if (isMatch) {
       matched = t
       break
     }
   }
+
   if (!matched) throw { status: 401, message: 'Refresh token not found' }
   if (matched.expiresAt < new Date())
     throw { status: 401, message: 'Refresh token expired' }
@@ -110,4 +119,25 @@ export async function logout(token: string) {
 
 export async function findUserById(id: number) {
   return prisma.user.findUnique({ where: { id } })
+}
+
+export async function updateProfile(
+  userId: number,
+  data: { name?: string | null; surname?: string | null }
+) {
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      name: data.name,
+      surname: data.surname,
+    },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      name: true,
+      surname: true,
+    },
+  })
+  return user
 }

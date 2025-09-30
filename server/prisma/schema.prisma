@@ -20,6 +20,7 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   RefreshToken  RefreshToken[]
+  Library       Library?
 }
 
 model RefreshToken {
@@ -32,4 +33,17 @@ model RefreshToken {
   revoked      Boolean  @default(false)
 
   @@index([userId])
+  @@index([tokenHash])
+}
+
+model Library {
+  id          Int      @id @default(autoincrement())
+  name        String
+  address     String
+  librarianId Int      @unique
+  librarian   User     @relation(fields: [librarianId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([librarianId])
 }

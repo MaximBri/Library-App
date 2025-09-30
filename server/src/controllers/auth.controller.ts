@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import * as authService from '../services/auth.service'
-import { RegisterInput, LoginInput } from '../validators/auth.validator'
+import { RegisterInput, LoginInput, UpdateProfileInput } from '../validators/auth.validator'
 import { ACCESS_EXPIRES } from '../utils/jwt'
 import { setValueInCookie } from '../utils/setValueInCookie'
 import {
@@ -17,7 +17,7 @@ const setTokens = (res: Response, refresh: string, access?: string) => {
     res,
     refresh,
     REFRESH_TOKEN,
-    '/api/auth/refresh',
+    '/',
     1000 * 60 * 60 * 24 * REFRESH_TOKEN_EXPIRES_IN_DAYS
   )
 }
@@ -50,9 +50,9 @@ export const refresh = async (req: Request, res: Response) => {
   if (!tokenFromCookie)
     return res.status(401).json({ message: 'No refresh token' })
 
-  const { refreshToken } = await authService.refresh(tokenFromCookie)
+  const { accessToken, refreshToken } = await authService.refresh(tokenFromCookie)
 
-  setTokens(res, refreshToken.token)
+  setTokens(res, refreshToken.token, accessToken)
 
   res.json({ success: 'true' })
 }
@@ -74,5 +74,20 @@ export const me = async (req: Request, res: Response) => {
     role: user?.role,
     name: user?.name ?? null,
     surname: user?.surname ?? null,
+  })
+}
+
+export const updateProfile = async (req: Request, res: Response) => {
+  const data = UpdateProfileInput.parse(req.body)
+  const userId = (req as any).userId
+
+  const user = await authService.updateProfile(userId, data)
+
+  res.json({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    name: user.name,
+    surname: user.surname,
   })
 }
