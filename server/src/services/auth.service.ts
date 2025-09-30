@@ -19,7 +19,7 @@ export async function register({
   password: string
 }) {
   const existing = await prisma.user.findUnique({ where: { email } })
-  if (existing) throw { status: 400, message: 'Email already registered' }
+  if (existing) throw { status: 400, message: 'Такая почта уже существует' }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS)
   const user = await prisma.user.create({
