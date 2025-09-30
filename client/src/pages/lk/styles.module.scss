@@ -1,0 +1,31 @@
+.lk {
+  &__title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+  &__role {
+    font-weight: 500;
+    font-size: 22px;
+    & > strong {
+      font-weight: 600;
+    }
+  }
+  &__form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    font-size: 22px;
+    &-input {
+      height: 50px;
+      &--disabled {
+        filter: brightness(0.9);
+      }
+    }
+    &-label {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+}
