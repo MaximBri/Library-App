@@ -8,7 +8,7 @@ export const Header = () => {
 
   const username =
     user?.name && user?.surname
-      ? `${user.name} ${user.surname.slice(1)}.`
+      ? `${user.name} ${user.surname.slice(0, 1)}.`
       : user?.email;
 
   return (

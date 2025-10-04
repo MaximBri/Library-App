@@ -1,3 +1,5 @@
+import z from "zod";
+
 export const fields = [
   {
     value: 'name',
@@ -10,3 +12,8 @@ export const fields = [
     name: 'surname',
   },
 ];
+
+export const updateUserDataSchema = z.object({
+  name: z.string(),
+  surname: z.string(),
+});

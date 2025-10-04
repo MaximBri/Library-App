@@ -1,0 +1,17 @@
+import api from '../axios';
+import type {
+  LibraryCreateModel,
+  LibraryModel,
+} from '../hooks/libraries/types';
+
+export const libraryApi = {
+  getLibraries: async () => {
+    const { data } = await api.get<LibraryModel[]>('/api/libraries');
+    return data;
+  },
+
+  createLibrary: async (params: LibraryCreateModel) => {
+    const { data } = await api.post('/api/libraries', params);
+    return data;
+  },
+};
