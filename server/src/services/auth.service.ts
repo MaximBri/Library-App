@@ -141,3 +141,25 @@ export async function updateProfile(
   })
   return user
 }
+
+export async function updateUserRole(userId: number, role: string) {
+  const user = await prisma.user.findUnique({ where: { id: userId } })
+
+  if (!user) {
+    throw { status: 404, message: 'User not found' }
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: { role },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      name: true,
+      surname: true,
+    },
+  })
+
+  return updatedUser
+}

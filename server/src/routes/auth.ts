@@ -15,3 +15,4 @@ authRouter.patch(
   requireAuth,
   asyncHandler(authController.updateProfile)
 )
+authRouter.patch('/role', requireAuth, asyncHandler(authController.updateRole))

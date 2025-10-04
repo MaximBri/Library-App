@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import * as authService from '../services/auth.service'
-import { RegisterInput, LoginInput, UpdateProfileInput } from '../validators/auth.validator'
+import { RegisterInput, LoginInput, UpdateProfileInput, UpdateRoleInput } from '../validators/auth.validator'
 import { ACCESS_EXPIRES } from '../utils/jwt'
 import { setValueInCookie } from '../utils/setValueInCookie'
 import {
@@ -82,6 +82,26 @@ export const updateProfile = async (req: Request, res: Response) => {
   const userId = (req as any).userId
 
   const user = await authService.updateProfile(userId, data)
+
+  res.json({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    name: user.name,
+    surname: user.surname,
+  })
+}
+
+export const updateRole = async (req: Request, res: Response) => {
+  const data = UpdateRoleInput.parse(req.body)
+  
+  // Проверяем, что текущий пользователь - админ
+  const currentUserRole = (req as any).userRole
+  if (currentUserRole !== 'admin') {
+    return res.status(403).json({ message: 'Only admins can change user roles' })
+  }
+
+  const user = await authService.updateUserRole(data.userId, data.role)
 
   res.json({
     id: user.id,

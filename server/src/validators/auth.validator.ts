@@ -14,3 +14,8 @@ export const UpdateProfileInput = z.object({
   name: z.string().min(1).max(100).optional().nullable(),
   surname: z.string().min(1).max(100).optional().nullable(),
 })
+
+export const UpdateRoleInput = z.object({
+  userId: z.number().int().positive(),
+  role: z.enum(['user', 'admin', 'librarian']),
+})
