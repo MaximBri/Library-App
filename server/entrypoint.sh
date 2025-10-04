@@ -25,5 +25,8 @@ fi
 echo "Generating Prisma client..."
 npx prisma generate --schema=./prisma/schema.prisma
 
+echo "Running seed script..."
+npm run prisma:seed || echo "Seed script failed or admin already exists"
+
 echo "Starting app..."
 exec npm start

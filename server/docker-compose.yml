@@ -35,6 +35,8 @@ services:
       REFRESH_TOKEN_EXPIRES_IN_DAYS: '30'
       BCRYPT_SALT_ROUNDS: '12'
       COOKIE_SECURE: 'false'
+      ADMIN_EMAIL: 'admin@library.com'
+      ADMIN_PASSWORD: 'admin123'
     ports:
       - '4000:4000'
 
