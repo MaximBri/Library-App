@@ -9,7 +9,7 @@ export type User = {
 } | null;
 
 export type AuthContextValue = {
-  user: User;
+  user?: User;
   isAuthorized: boolean | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;

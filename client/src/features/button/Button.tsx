@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { FC, MouseEvent } from 'react';
 import type { ButtonType } from '@/shared/types';
 import styles from './styles.module.scss';
 import LoaderSvg from '@/shared/icons/loader.svg';
@@ -6,7 +6,7 @@ import LoaderSvg from '@/shared/icons/loader.svg';
 export const Button: FC<{
   className?: string;
   text: string;
-  onClick?: () => void;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   isDisabled?: boolean;
   type?: ButtonType;
   isLoading?: boolean;
