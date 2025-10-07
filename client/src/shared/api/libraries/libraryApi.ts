@@ -11,7 +11,10 @@ export const libraryApi = {
   },
 
   createLibrary: async (params: LibraryCreateModel) => {
-    const { data } = await api.post('/api/libraries', params);
+    const { data } = await api.post('/api/libraries', {
+      ...params,
+      librarianId: Number(params.librarianId),
+    });
     return data;
   },
 };

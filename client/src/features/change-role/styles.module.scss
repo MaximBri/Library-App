@@ -1,0 +1,14 @@
+.change {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  &__form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    &-button {
+      text-wrap: nowrap;
+      width: min-content;
+    }
+  }
+}

@@ -7,6 +7,7 @@ import { APP_ROLES, RolesMap } from '@/shared/constants';
 import { Button } from '../button/Button';
 import { useUpdateUserRole } from '@/shared/api/hooks/user/useUpdateUserRole';
 import { useAuth } from '@/shared/hooks/useAuth';
+import styles from './styles.module.scss';
 
 export const ChangeRole = () => {
   const { user } = useAuth();
@@ -24,9 +25,12 @@ export const ChangeRole = () => {
   }
 
   return (
-    <section>
+    <section className={styles['change']}>
       <h2>Изменить роль пользователю</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={styles['change__form']}
+      >
         <Input
           {...register('id')}
           value={getValues('id')}
@@ -38,7 +42,11 @@ export const ChangeRole = () => {
           placeholder="Роль пользователя"
           options={Object.values(RolesMap)}
         ></Input>
-        <Button type="submit" text="Изменить"></Button>
+        <Button
+          type="submit"
+          text="Изменить"
+          className={styles['change__form-button']}
+        ></Button>
       </form>
     </section>
   );

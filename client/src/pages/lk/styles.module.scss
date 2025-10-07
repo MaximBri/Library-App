@@ -38,4 +38,15 @@
       text-wrap: nowrap;
     }
   }
+  &__admin {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+  }
+  &__exit-button {
+    background-color: $error;
+    color: $text-on-dark;
+    border: transparent;
+    margin-top: 20px;
+  }
 }

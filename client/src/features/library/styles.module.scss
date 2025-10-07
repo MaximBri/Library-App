@@ -1,0 +1,20 @@
+.library {
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  &__name {
+    font-size: 28px;
+  }
+  &__address {
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  &__librarian{
+    font-size: 26px;
+  }
+}

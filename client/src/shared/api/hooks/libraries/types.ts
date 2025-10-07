@@ -3,7 +3,7 @@ import type { User } from '@/shared/hooks/useAuth';
 export interface LibraryModel {
   id: number;
   name: string;
-  adress: string;
+  address: string;
   librarianId: number;
   librarian: User;
 }
@@ -11,5 +11,5 @@ export interface LibraryModel {
 export interface LibraryCreateModel {
   name: string;
   address: string;
-  librarianId: number;
+  librarianId: string;
 }

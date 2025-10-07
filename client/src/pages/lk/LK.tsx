@@ -1,5 +1,5 @@
 import { Input } from '@/features/input/Input';
-import { RolesMap, type T_ROLES } from '@/shared/constants';
+import { APP_ROLES, RolesMap, type T_ROLES } from '@/shared/constants';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useState, type MouseEvent } from 'react';
 import styles from './styles.module.scss';
@@ -10,10 +10,13 @@ import { Button } from '@/features/button/Button';
 import type { UpdateUserForm } from './types';
 import { useUpdateUserData } from '@/shared/api/hooks/user/useUpdateUserData';
 import { ChangeRole } from '@/features/change-role/ChangeRole';
+import { useNavigate } from 'react-router-dom';
+import { APP_ROUTES } from '@/shared/routes';
 
 export const LK = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { mutate: updateUserData, isPending } = useUpdateUserData();
+  const navigate = useNavigate();
 
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const { register, handleSubmit, getValues } = useForm<UpdateUserForm>({
@@ -29,6 +32,11 @@ export const LK = () => {
   const onSubmit = async (data: UpdateUserForm) => {
     updateUserData(data);
     setIsEdit((prev) => !prev);
+  };
+
+  const handleExitClick = async () => {
+    await logout();
+    navigate(APP_ROUTES.LOGIN);
   };
 
   return (
@@ -77,8 +85,19 @@ export const LK = () => {
             ></Button>
           )}
         </form>
+        <Button
+          type="button"
+          className={styles['lk__exit-button']}
+          onClick={handleExitClick}
+          text="Выйти из аккаунта"
+        ></Button>
       </section>
-      <ChangeRole />
+      {user?.role === APP_ROLES.ADMIN && (
+        <>
+          <h2 className={styles['lk__admin']}>Админ-панель</h2>
+          <ChangeRole />
+        </>
+      )}
     </div>
   );
 };

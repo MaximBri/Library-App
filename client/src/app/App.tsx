@@ -9,6 +9,7 @@ import { AppLayout } from './AppLayout';
 import { LK } from '@/pages/lk/LK';
 import { Libraries } from '@/pages/libraries/Libraries';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { LibraryPage } from '@/pages/library';
 
 const queryClient = new QueryClient();
 
@@ -38,10 +39,10 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route
-                path={APP_ROUTES.LIBRARIES}
-                element={<Libraries />}
-              ></Route>
+              <Route path={APP_ROUTES.LIBRARIES}>
+                <Route index element={<Libraries />}></Route>
+                <Route path={':id'} element={<LibraryPage />}></Route>
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>

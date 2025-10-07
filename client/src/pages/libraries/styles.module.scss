@@ -3,8 +3,23 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  position: relative;
   &__title {
     font-size: 24px;
     margin-bottom: 20px;
+  }
+  &__add-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 40px;
+    width: 40px;
+    font-size: 26px;
+    border-radius: 10px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid $text-primary;
   }
 }

@@ -4,6 +4,15 @@
   border-radius: 12px;
   box-shadow: $shadow-sm;
   max-width: 720px;
+  position: fixed;
+  z-index: 50;
+}
+
+.background {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  background-color: $overlay-40;
 }
 
 .title {
