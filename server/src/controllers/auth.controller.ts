@@ -1,6 +1,11 @@
 import { Request, Response } from 'express'
 import * as authService from '../services/auth.service'
-import { RegisterInput, LoginInput, UpdateProfileInput, UpdateRoleInput } from '../validators/auth.validator'
+import {
+  RegisterInput,
+  LoginInput,
+  UpdateProfileInput,
+  UpdateRoleInput,
+} from '../validators/auth.validator'
 import { ACCESS_EXPIRES } from '../utils/jwt'
 import { setValueInCookie } from '../utils/setValueInCookie'
 import {
@@ -50,7 +55,9 @@ export const refresh = async (req: Request, res: Response) => {
   if (!tokenFromCookie)
     return res.status(401).json({ message: 'No refresh token' })
 
-  const { accessToken, refreshToken } = await authService.refresh(tokenFromCookie)
+  const { accessToken, refreshToken } = await authService.refresh(
+    tokenFromCookie
+  )
 
   setTokens(res, refreshToken.token, accessToken)
 
@@ -61,7 +68,8 @@ export const logout = async (req: Request, res: Response) => {
   const tokenFromCookie = req.cookies?.refreshToken
   if (tokenFromCookie) {
     await authService.logout(tokenFromCookie)
-    res.clearCookie('refreshToken', { path: '/api/auth/refresh' })
+    res.clearCookie('refreshToken', { path: '/' })
+    res.clearCookie('accessToken', { path: '/' })
   }
   res.status(204).send()
 }
@@ -94,11 +102,13 @@ export const updateProfile = async (req: Request, res: Response) => {
 
 export const updateRole = async (req: Request, res: Response) => {
   const data = UpdateRoleInput.parse(req.body)
-  
+
   // Проверяем, что текущий пользователь - админ
   const currentUserRole = (req as any).userRole
   if (currentUserRole !== 'admin') {
-    return res.status(403).json({ message: 'Only admins can change user roles' })
+    return res
+      .status(403)
+      .json({ message: 'Only admins can change user roles' })
   }
 
   const user = await authService.updateUserRole(data.userId, data.role)

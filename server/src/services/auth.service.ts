@@ -109,7 +109,6 @@ export async function refresh(token: string) {
 
 export async function logout(token: string) {
   const payload = verifyRefreshToken(token)
-  // revoke all tokens for user (option) OR only the matching one
   await prisma.refreshToken.updateMany({
     where: { userId: payload.userId },
     data: { revoked: true },
