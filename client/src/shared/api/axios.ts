@@ -40,6 +40,7 @@ api.interceptors.response.use(
   async (err: AxiosError & { config?: AxiosRequestConfig }) => {
     const originalConfig = err.config;
     if (!originalConfig) return Promise.reject(err);
+    if(err.response?.statusText !== 'Unauthorized') return;
 
     if (err.response?.status === 401 && !originalConfig._retry) {
       originalConfig._retry = true;

@@ -5,7 +5,7 @@ import styles from './styles.module.scss';
 import { APP_ROLES } from '@/shared/constants';
 
 export const Header = () => {
-  const { user } = useAuth();
+  const { user, isAuthorized, myLibrary } = useAuth();
 
   const username =
     user?.name && user?.surname
@@ -21,8 +21,14 @@ export const Header = () => {
       <nav className={styles['header__nav']}>
         <Link to={APP_ROUTES.LIBRARIES}>Библиотеки</Link>
         <Link to={APP_ROUTES.BOOKS}>Книги</Link>
+        {myLibrary && (
+          <Link to={`${APP_ROUTES.LIBRARIES}/${myLibrary.id}`}>
+            Моя библиотека
+          </Link>
+        )}
         {isAdmin && <Link to={APP_ROUTES.USERS}>Пользователи</Link>}
-        <Link to={APP_ROUTES.LK}>{username}</Link>
+        {username && <Link to={APP_ROUTES.LK}>{username}</Link>}
+        {isAuthorized === false && <Link to={APP_ROUTES.LOGIN}>Войти</Link>}
       </nav>
     </header>
   );

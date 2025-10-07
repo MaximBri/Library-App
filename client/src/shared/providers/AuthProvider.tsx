@@ -9,11 +9,23 @@ import api from '../api/axios';
 import { AuthContext, type AuthContextValue } from '../hooks/useAuth';
 import { useGetUserData } from '../api/hooks/user/useGetUserData';
 import { useQueryClient } from '@tanstack/react-query';
+import { useGetMyLibrary } from '../api/hooks/libraries/useGetMyLibrary';
+import type { LibraryModel } from './types';
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const queryClient = useQueryClient();
-  const { data: user, refetch, isLoading } = useGetUserData();
+
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [myLibrary, setMyLibrary] = useState<LibraryModel | null>(null);
+
+  const {
+    data: user,
+    refetch,
+    isLoading,
+    isError,
+  } = useGetUserData(isAuthorized === null);
+
+  const { data: myLibraryData } = useGetMyLibrary(myLibrary === null);
 
   useEffect(() => {
     const isFirstLoad = user === undefined && isAuthorized === null;
@@ -21,8 +33,21 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [user, isAuthorized]);
 
   useEffect(() => {
+    if (myLibrary === null && myLibraryData) {
+      setMyLibrary(myLibraryData);
+    }
+  }, [myLibraryData, myLibrary]);
+
+  useEffect(() => {
     console.log('Состояние авторизованности: ', isAuthorized);
   }, [isAuthorized]);
+
+  useEffect(() => {
+    if (isError) {
+      setIsAuthorized(false);
+      queryClient.clear();
+    }
+  }, [isError, queryClient]);
 
   const login = async (email: string, password: string) => {
     await api.post(
@@ -61,6 +86,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     logout,
     refresh,
     isAuthorized,
+    myLibrary
   };
 
   return <AuthContext.Provider value={ctx}>{children}</AuthContext.Provider>;

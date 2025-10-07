@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { T_ROLES } from '../constants';
+import type { LibraryModel } from '../providers/types';
 export type User = {
   id: number;
   email: string;
@@ -16,6 +17,7 @@ export type AuthContextValue = {
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
+  myLibrary: LibraryModel | null;
 };
 
 export const AuthContext = createContext<AuthContextValue | undefined>(
