@@ -33,10 +33,10 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [user, isAuthorized]);
 
   useEffect(() => {
-    if (myLibrary === null && myLibraryData) {
+    if (isAuthorized && myLibrary === null && myLibraryData) {
       setMyLibrary(myLibraryData);
     }
-  }, [myLibraryData, myLibrary]);
+  }, [myLibraryData, myLibrary, isAuthorized]);
 
   useEffect(() => {
     console.log('Состояние авторизованности: ', isAuthorized);
@@ -68,6 +68,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const logout = useCallback(async () => {
     await api.post('/api/auth/logout', {}, { withCredentials: true });
     queryClient.clear();
+    setIsAuthorized(false)
+    setMyLibrary(null)
   }, [queryClient]);
 
   const refresh = useCallback(async () => {
