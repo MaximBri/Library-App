@@ -61,7 +61,17 @@ export async function getBookById(id: number) {
     throw { status: 404, message: 'Book not found' }
   }
 
-  return book
+  const activeReservation = await prisma.reservation.findFirst({
+    where: {
+      bookId: id,
+      status: 'active',
+    },
+  })
+
+  return {
+    ...book,
+    isReserved: !!activeReservation,
+  }
 }
 
 export async function getBooks(params: {
@@ -91,10 +101,27 @@ export async function getBooks(params: {
 
   const hasMore = books.length > limit
   const items = hasMore ? books.slice(0, -1) : books
+
+  const bookIds = items.map((book) => book.id)
+  const activeReservations = await prisma.reservation.findMany({
+    where: {
+      bookId: { in: bookIds },
+      status: 'active',
+    },
+    select: { bookId: true },
+  })
+
+  const reservedBookIds = new Set(activeReservations.map((res) => res.bookId))
+
+  const itemsWithStatus = items.map((book) => ({
+    ...book,
+    isReserved: reservedBookIds.has(book.id),
+  }))
+
   const nextCursor = hasMore ? items[items.length - 1].id : null
 
   return {
-    items,
+    items: itemsWithStatus,
     nextCursor,
     hasMore,
   }
@@ -152,6 +179,24 @@ export async function getBooksByLibraryId(
 ) {
   const { cursor, limit = 20 } = params
 
+  const library = await prisma.library.findUnique({
+    where: { id: libraryId },
+    include: {
+      librarian: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          surname: true,
+        },
+      },
+    },
+  })
+
+  if (!library) {
+    throw { status: 404, message: 'Library not found' }
+  }
+
   const books = await prisma.book.findMany({
     where: { libraryId },
     take: limit + 1,
@@ -170,10 +215,33 @@ export async function getBooksByLibraryId(
 
   const hasMore = books.length > limit
   const items = hasMore ? books.slice(0, -1) : books
+
+  const bookIds = items.map((book) => book.id)
+  const activeReservations = await prisma.reservation.findMany({
+    where: {
+      bookId: { in: bookIds },
+      status: 'active',
+    },
+    select: { bookId: true },
+  })
+
+  const reservedBookIds = new Set(activeReservations.map((res) => res.bookId))
+
+  const itemsWithStatus = items.map((book) => ({
+    ...book,
+    isReserved: reservedBookIds.has(book.id),
+  }))
+
   const nextCursor = hasMore ? items[items.length - 1].id : null
 
   return {
-    items,
+    library: {
+      id: library.id,
+      name: library.name,
+      address: library.address,
+      librarian: library.librarian,
+    },
+    items: itemsWithStatus,
     nextCursor,
     hasMore,
   }

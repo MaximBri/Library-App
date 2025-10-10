@@ -21,6 +21,7 @@ model User {
 
   RefreshToken  RefreshToken[]
   Library       Library?
+  Reservation   Reservation[]
 }
 
 model RefreshToken {
@@ -40,10 +41,46 @@ model Library {
   id          Int      @id @default(autoincrement())
   name        String
   address     String
+  books       Book[]
   librarianId Int      @unique
   librarian   User     @relation(fields: [librarianId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([librarianId])
+}
+
+model Book {
+  id              Int      @id @default(autoincrement())
+  name            String
+  author          String
+  isbn            String
+  type            String   
+  theme           String
+  publishingYear  Int
+  libraryId       Int
+  library         Library  @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  Reservation     Reservation[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([libraryId])
+  @@index([isbn])
+}
+
+model Reservation {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId     Int
+  book       Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  status     String    @default("active")
+  expiresAt  DateTime
+  returnedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([bookId])
+  @@index([status])
 }

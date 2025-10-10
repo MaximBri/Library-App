@@ -7,6 +7,7 @@ import { authRouter } from './routes/auth'
 import { errorHandler } from './middleware/errorHandler'
 import { libraryRouter } from './routes/library'
 import { bookRouter } from './routes/book'
+import { reservationRouter } from './routes/reservation'
 
 export const app = express()
 
@@ -21,10 +22,13 @@ app.use(
   })
 )
 
-app.options("*", cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
-  credentials: true,
-}));
+app.options(
+  '*',
+  cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    credentials: true,
+  })
+)
 
 app.use(
   rateLimit({
@@ -36,6 +40,7 @@ app.use(
 app.use('/api/auth', authRouter)
 app.use('/api/libraries', libraryRouter)
 app.use('/api/books', bookRouter)
+app.use('/api/reservations', reservationRouter)
 
 app.get('/health', (_req, res) => res.json({ ok: true }))
 

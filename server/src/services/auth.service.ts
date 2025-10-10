@@ -70,7 +70,7 @@ export async function refresh(token: string) {
     orderBy: { createdAt: 'desc' },
   })
 
-  let matched = null
+  let matched: any = null
   for (const t of tokens) {
     const isMatch = await compareTokenHash(token, t.tokenHash)
     if (isMatch) {
