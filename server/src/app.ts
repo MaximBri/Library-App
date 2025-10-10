@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit'
 import { authRouter } from './routes/auth'
 import { errorHandler } from './middleware/errorHandler'
 import { libraryRouter } from './routes/library'
+import { bookRouter } from './routes/book'
 
 export const app = express()
 
@@ -34,6 +35,7 @@ app.use(
 
 app.use('/api/auth', authRouter)
 app.use('/api/libraries', libraryRouter)
+app.use('/api/books', bookRouter)
 
 app.get('/health', (_req, res) => res.json({ ok: true }))
 
