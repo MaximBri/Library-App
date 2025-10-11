@@ -8,7 +8,8 @@
     "start": "node dist/index.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:seed": "ts-node prisma/seed.js"
+    "prisma:seed": "ts-node prisma/seed.js",
+    "generate:erd": "prisma generate && prisma-erd-generator"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
@@ -23,6 +24,7 @@
     "zod": "^3.23.2"
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.12.0",
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.19",
@@ -30,6 +32,8 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/node": "^24.5.0",
     "prisma": "^5.0.0",
+    "prisma-erd-generator": "^2.1.0",
+    "puppeteer": "^23.11.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.1.6"
   }

@@ -1,12 +1,45 @@
 import { z } from 'zod'
 
-export const CreateReservationInput = z.object({
-  bookId: z.number().int().positive(),
-  daysToReserve: z.number().int().min(1).max(30).default(14),
+export const CreateReservationInput = z
+  .object({
+    bookId: z.number().int().positive(),
+    requestedStartDate: z.string().refine(
+      (date) => {
+        const d = new Date(date)
+        return (
+          !isNaN(d.getTime()) && d >= new Date(new Date().setHours(0, 0, 0, 0))
+        )
+      },
+      { message: 'Start date must be valid and not in the past' }
+    ),
+    requestedEndDate: z.string().refine(
+      (date) => {
+        const d = new Date(date)
+        return !isNaN(d.getTime())
+      },
+      { message: 'End date must be valid' }
+    ),
+    userComment: z.string().max(1000).optional(),
+  })
+  .refine(
+    (data) => {
+      const start = new Date(data.requestedStartDate)
+      const end = new Date(data.requestedEndDate)
+      return end > start
+    },
+    {
+      message: 'End date must be after start date',
+      path: ['requestedEndDate'],
+    }
+  )
+
+export const ReviewReservationInput = z.object({
+  status: z.enum(['approved', 'rejected']),
+  librarianComment: z.string().max(1000).optional(),
 })
 
 export const UpdateReservationStatusInput = z.object({
-  status: z.enum(['active', 'completed', 'cancelled']),
+  status: z.enum(['pending', 'approved', 'rejected', 'completed', 'cancelled']),
 })
 
 export const GetReservationsQueryInput = z.object({
@@ -15,7 +48,9 @@ export const GetReservationsQueryInput = z.object({
     .string()
     .transform((val) => Math.min(parseInt(val) || 20, 100))
     .optional(),
-  status: z.enum(['active', 'completed', 'cancelled']).optional(),
+  status: z
+    .enum(['pending', 'approved', 'rejected', 'completed', 'cancelled'])
+    .optional(),
   userId: z
     .string()
     .transform((val) => parseInt(val))

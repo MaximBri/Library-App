@@ -5,7 +5,9 @@ const prisma = new PrismaClient()
 export async function createReservation(data: {
   userId: number
   bookId: number
-  daysToReserve: number
+  requestedStartDate: Date
+  requestedEndDate: Date
+  userComment?: string
 }) {
   const book = await prisma.book.findUnique({
     where: { id: data.bookId },
@@ -16,38 +18,154 @@ export async function createReservation(data: {
     throw { status: 404, message: 'Book not found' }
   }
 
-  const activeReservation = await prisma.reservation.findFirst({
-    where: {
-      bookId: data.bookId,
-      status: 'active',
-    },
-  })
-
-  if (activeReservation) {
-    throw { status: 400, message: 'Book is already reserved' }
-  }
-
-  const userActiveReservation = await prisma.reservation.findFirst({
+  const existingReservation = await prisma.reservation.findFirst({
     where: {
       userId: data.userId,
       bookId: data.bookId,
-      status: 'active',
+      status: { in: ['pending', 'approved'] },
     },
   })
 
-  if (userActiveReservation) {
-    throw { status: 400, message: 'You already have an active reservation for this book' }
+  if (existingReservation) {
+    throw { status: 400, message: 'You already have a pending or approved reservation for this book' }
   }
 
-  const expiresAt = new Date()
-  expiresAt.setDate(expiresAt.getDate() + data.daysToReserve)
+  const conflictingReservations = await prisma.reservation.findMany({
+    where: {
+      bookId: data.bookId,
+      status: 'approved',
+      OR: [
+        {
+          AND: [
+            { requestedStartDate: { lte: data.requestedStartDate } },
+            { requestedEndDate: { gte: data.requestedStartDate } },
+          ],
+        },
+        {
+          AND: [
+            { requestedStartDate: { lte: data.requestedEndDate } },
+            { requestedEndDate: { gte: data.requestedEndDate } },
+          ],
+        },
+        {
+          AND: [
+            { requestedStartDate: { gte: data.requestedStartDate } },
+            { requestedEndDate: { lte: data.requestedEndDate } },
+          ],
+        },
+      ],
+    },
+  })
+
+  if (conflictingReservations.length > 0) {
+    throw { status: 400, message: 'Book is already reserved for the requested period' }
+  }
 
   const reservation = await prisma.reservation.create({
     data: {
       userId: data.userId,
       bookId: data.bookId,
-      expiresAt,
-      status: 'active',
+      requestedStartDate: data.requestedStartDate,
+      requestedEndDate: data.requestedEndDate,
+      userComment: data.userComment,
+      status: 'pending',
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          surname: true,
+        },
+      },
+      book: {
+        include: {
+          library: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+              librarianId: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return reservation
+}
+
+export async function reviewReservation(
+  reservationId: number,
+  librarianId: number,
+  status: 'approved' | 'rejected',
+  librarianComment?: string
+) {
+  const reservation = await prisma.reservation.findUnique({
+    where: { id: reservationId },
+    include: {
+      book: {
+        include: {
+          library: true,
+        },
+      },
+    },
+  })
+
+  if (!reservation) {
+    throw { status: 404, message: 'Reservation not found' }
+  }
+
+  if (reservation.book.library.librarianId !== librarianId) {
+    throw { status: 403, message: 'You can only review reservations for your library' }
+  }
+
+  if (reservation.status !== 'pending') {
+    throw { status: 400, message: 'Only pending reservations can be reviewed' }
+  }
+
+  if (status === 'approved') {
+    const conflictingReservations = await prisma.reservation.findMany({
+      where: {
+        bookId: reservation.bookId,
+        status: 'approved',
+        id: { not: reservationId },
+        OR: [
+          {
+            AND: [
+              { requestedStartDate: { lte: reservation.requestedStartDate } },
+              { requestedEndDate: { gte: reservation.requestedStartDate } },
+            ],
+          },
+          {
+            AND: [
+              { requestedStartDate: { lte: reservation.requestedEndDate } },
+              { requestedEndDate: { gte: reservation.requestedEndDate } },
+            ],
+          },
+          {
+            AND: [
+              { requestedStartDate: { gte: reservation.requestedStartDate } },
+              { requestedEndDate: { lte: reservation.requestedEndDate } },
+            ],
+          },
+        ],
+      },
+    })
+
+    if (conflictingReservations.length > 0) {
+      throw { status: 400, message: 'Cannot approve: book is already reserved for this period' }
+    }
+  }
+
+  const updated = await prisma.reservation.update({
+    where: { id: reservationId },
+    data: {
+      status,
+      librarianComment,
+      reviewedAt: new Date(),
     },
     include: {
       user: {
@@ -72,7 +190,7 @@ export async function createReservation(data: {
     },
   })
 
-  return reservation
+  return updated
 }
 
 export async function getReservationById(id: number) {
@@ -201,6 +319,66 @@ export async function getUserReservations(
   }
 }
 
+export async function getLibraryReservations(
+  librarianId: number,
+  params: { cursor?: number; limit?: number; status?: string }
+) {
+  const { cursor, limit = 20, status } = params
+
+  const library = await prisma.library.findUnique({
+    where: { librarianId },
+  })
+
+  if (!library) {
+    throw { status: 404, message: 'Library not found for this librarian' }
+  }
+
+  const where: any = {
+    book: {
+      libraryId: library.id,
+    },
+  }
+  if (status) where.status = status
+
+  const reservations = await prisma.reservation.findMany({
+    where,
+    take: limit + 1,
+    ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+    orderBy: { id: 'desc' },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          surname: true,
+        },
+      },
+      book: {
+        include: {
+          library: {
+            select: {
+              id: true,
+              name: true,
+              address: true,
+            },
+          },
+        },
+      },
+    },
+  })
+
+  const hasMore = reservations.length > limit
+  const items = hasMore ? reservations.slice(0, -1) : reservations
+  const nextCursor = hasMore ? items[items.length - 1].id : null
+
+  return {
+    items,
+    nextCursor,
+    hasMore,
+  }
+}
+
 export async function updateReservationStatus(
   id: number,
   status: string,
@@ -266,8 +444,8 @@ export async function cancelReservation(id: number, userId: number) {
     throw { status: 403, message: 'You can only cancel your own reservations' }
   }
 
-  if (reservation.status !== 'active') {
-    throw { status: 400, message: 'Only active reservations can be cancelled' }
+  if (!['pending', 'approved'].includes(reservation.status)) {
+    throw { status: 400, message: 'Only pending or approved reservations can be cancelled' }
   }
 
   const updated = await prisma.reservation.update({
@@ -291,13 +469,37 @@ export async function cancelReservation(id: number, userId: number) {
   return updated
 }
 
-export async function isBookAvailable(bookId: number) {
-  const activeReservation = await prisma.reservation.findFirst({
+export async function isBookAvailable(
+  bookId: number,
+  startDate: Date,
+  endDate: Date
+) {
+  const conflictingReservations = await prisma.reservation.findMany({
     where: {
       bookId,
-      status: 'active',
+      status: 'approved',
+      OR: [
+        {
+          AND: [
+            { requestedStartDate: { lte: startDate } },
+            { requestedEndDate: { gte: startDate } },
+          ],
+        },
+        {
+          AND: [
+            { requestedStartDate: { lte: endDate } },
+            { requestedEndDate: { gte: endDate } },
+          ],
+        },
+        {
+          AND: [
+            { requestedStartDate: { gte: startDate } },
+            { requestedEndDate: { lte: endDate } },
+          ],
+        },
+      ],
     },
   })
 
-  return !activeReservation
+  return conflictingReservations.length === 0
 }

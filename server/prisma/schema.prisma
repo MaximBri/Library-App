@@ -69,16 +69,23 @@ model Book {
 }
 
 model Reservation {
-  id         Int       @id @default(autoincrement())
-  userId     Int
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bookId     Int
-  book       Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
-  status     String    @default("active")
-  expiresAt  DateTime
-  returnedAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id                Int       @id @default(autoincrement())
+  userId            Int
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookId            Int
+  book              Book      @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  
+  status            String    @default("pending")
+  requestedStartDate DateTime
+  requestedEndDate   DateTime
+  
+  userComment       String?
+  librarianComment  String?
+  reviewedAt        DateTime?
+  returnedAt        DateTime?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([userId])
   @@index([bookId])

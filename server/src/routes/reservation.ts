@@ -5,7 +5,7 @@ import { requireAuth } from '../middleware/authMiddleware'
 
 export const reservationRouter = Router()
 
-// Создание бронирования (требует авторизации)
+// Создание заявки на бронирование (требует авторизации)
 reservationRouter.post(
   '/',
   requireAuth,
@@ -17,6 +17,13 @@ reservationRouter.get(
   '/my',
   requireAuth,
   asyncHandler(reservationController.getMyReservations)
+)
+
+// Получение заявок библиотеки (для библиотекаря)
+reservationRouter.get(
+  '/library',
+  requireAuth,
+  asyncHandler(reservationController.getLibraryReservations)
 )
 
 // Получение всех бронирований (с фильтрами)
@@ -32,6 +39,13 @@ reservationRouter.get(
 reservationRouter.get(
   '/:id',
   asyncHandler(reservationController.getReservation)
+)
+
+// Одобрение/отклонение заявки (для библиотекаря)
+reservationRouter.post(
+  '/:id/review',
+  requireAuth,
+  asyncHandler(reservationController.reviewReservation)
 )
 
 // Обновление статуса бронирования
