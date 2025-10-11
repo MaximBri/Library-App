@@ -21,13 +21,13 @@ export const LibraryPage = () => {
   const handleChangeBookModal = () => setIsAddBookModalOpen((prev) => !prev);
 
   const isAdmin = user?.role === APP_ROLES.ADMIN;
-  const isOwner = user?.role === APP_ROLES.LIBRARIAN;
+  const isOwner = user?.id === data?.pages?.[0]?.library?.librarian?.id;
   const books = data?.pages.flatMap((page) => page.items) || [];
 
   return (
     <section className={styles['page']}>
       <div className={styles['page__header']}>
-        <h1 className={styles['page__title']}>Книги библиотеки</h1>
+        <h1 className={styles['page__title']}>Книги библиотеки:</h1>
         {(isAdmin || isOwner) && (
           <button
             className={styles['page__add-button']}

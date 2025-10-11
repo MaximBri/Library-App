@@ -5,5 +5,6 @@ export const APP_ROUTES = {
   LIBRARIES: '/libraries',
   USERS: '/users',
   BOOKS: '/books',
-  LK: '/lk'
+  LK: '/lk',
+  RESERVATIONS: 'reservations'
 };

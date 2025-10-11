@@ -13,6 +13,7 @@ import { LibraryPage } from '@/pages/library';
 import { UsersPage } from '@/pages/users';
 import { APP_ROLES } from '@/shared/constants';
 import { BooksPage } from '@/pages/books';
+import { ReservationsPage } from '@/pages/reservations';
 
 const queryClient = new QueryClient();
 
@@ -37,7 +38,17 @@ function App() {
               />
               <Route path={APP_ROUTES.LIBRARIES}>
                 <Route index element={<Libraries />} />
-                <Route path={':id'} element={<LibraryPage />} />
+                <Route path={':id'}>
+                  <Route index element={<LibraryPage />} />
+                  <Route
+                    path={APP_ROUTES.RESERVATIONS}
+                    element={
+                      <ProtectedRoute allowedRole={APP_ROLES.LIBRARIAN}>
+                        <ReservationsPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
               </Route>
               <Route path={APP_ROUTES.USERS}>
                 <Route
@@ -50,8 +61,7 @@ function App() {
                 />
               </Route>
               <Route path={APP_ROUTES.BOOKS}>
-                <Route index element={<BooksPage />}/>
-                {/* <Route path='id' element={}/> */}
+                <Route index element={<BooksPage />} />
               </Route>
             </Route>
           </Routes>

@@ -1,0 +1,10 @@
+.page{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  &__list{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+}

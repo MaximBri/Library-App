@@ -1,7 +1,10 @@
+import type { LibraryModel } from '@/shared/providers/types';
+
 export interface InfiniteBookList {
   nextCursor: number | null;
   hasMore: boolean;
   items: BookModel;
+  library: LibraryModel;
 }
 
 export interface BookModel {
@@ -17,4 +20,12 @@ export interface BookModel {
   theme: string;
   type: string;
   updatedAt: string;
+  isReserved: boolean;
+}
+
+export interface ReserveBookModel {
+  bookId: number;
+  requestedStartDate: string;
+  requestedEndDate: string;
+  userComment?: string | undefined;
 }

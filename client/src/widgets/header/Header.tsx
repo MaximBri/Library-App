@@ -3,14 +3,12 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/useAuth';
 import styles from './styles.module.scss';
 import { APP_ROLES } from '@/shared/constants';
+import { useGetUserName } from '@/shared/hooks/useGetUserName';
 
 export const Header = () => {
   const { user, isAuthorized, myLibrary } = useAuth();
 
-  const username =
-    user?.name && user?.surname
-      ? `${user.name} ${user.surname.slice(0, 1)}.`
-      : user?.email;
+  const username = useGetUserName(user);
   const isAdmin = user?.role === APP_ROLES.ADMIN;
 
   return (
@@ -22,9 +20,14 @@ export const Header = () => {
         <Link to={APP_ROUTES.LIBRARIES}>Библиотеки</Link>
         <Link to={APP_ROUTES.BOOKS}>Книги</Link>
         {myLibrary && (
-          <Link to={`${APP_ROUTES.LIBRARIES}/${myLibrary.id}`}>
-            Моя библиотека
-          </Link>
+          <>
+            <Link to={`${APP_ROUTES.LIBRARIES}/${myLibrary.id}`}>
+              Моя библиотека
+            </Link>
+            <Link to={`${APP_ROUTES.LIBRARIES}/${myLibrary.id}/reservations`}>
+              Бронирования
+            </Link>
+          </>
         )}
         {isAdmin && <Link to={APP_ROUTES.USERS}>Пользователи</Link>}
         {username && <Link to={APP_ROUTES.LK}>{username}</Link>}
