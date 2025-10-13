@@ -48,11 +48,10 @@ export const Libraries = () => {
         </ul>
         {!librariesList?.length && <EmptyList title="Библиотек пока нет :(" />}
       </div>
-      {createLibraryIsOpen &&
-        createPortal(
-          <CreateLibrary handleClose={handleCreateLibraryClick} />,
-          document.body
-        )}
+      <CreateLibrary
+        isOpen={createLibraryIsOpen}
+        handleClose={handleCreateLibraryClick}
+      />
     </>
   );
 };

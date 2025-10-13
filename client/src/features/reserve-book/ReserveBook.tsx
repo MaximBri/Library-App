@@ -1,7 +1,6 @@
 'use client';
 
 import { type FC } from 'react';
-import { FormBuilder } from '@/shared/utils/FormBuilder/FormBuilder';
 import {
   createReservationFormSchema,
   type CreateReservationForm,
@@ -9,14 +8,23 @@ import {
 import styles from './styles.module.scss';
 import { dateHelpers } from './constants';
 import { useReserveBook } from '@/shared/api/hooks/reservations/useReserveBook';
+import { Modal } from '@/shared/components/Modal/Modal';
+import { FormBuilder } from '@/shared/components/FormBuilder/FormBuilder';
+import { notify } from '@/shared/utils/notify';
 
 type Props = {
   bookId: number;
+  isOpen: boolean;
   onSuccess?: () => void;
-  handleClose?: () => void;
+  handleClose: () => void;
 };
 
-export const ReserveBook: FC<Props> = ({ bookId, onSuccess, handleClose }) => {
+export const ReserveBook: FC<Props> = ({
+  bookId,
+  isOpen,
+  onSuccess,
+  handleClose,
+}) => {
   const { mutate: createReservation, isPending } = useReserveBook();
 
   const onSubmit = (data: CreateReservationForm) => {
@@ -24,8 +32,12 @@ export const ReserveBook: FC<Props> = ({ bookId, onSuccess, handleClose }) => {
       { ...data, bookId: Number(bookId) },
       {
         onSuccess: () => {
+          notify('Заявка подана успешно', 'success');
           onSuccess?.();
-          handleClose?.();
+          handleClose();
+        },
+        onError: () => {
+          notify('Ошибка во время подачи заявки', 'error');
         },
       }
     );
@@ -75,25 +87,16 @@ export const ReserveBook: FC<Props> = ({ bookId, onSuccess, handleClose }) => {
   ];
 
   return (
-    <>
-      <div className={styles.reserveCard}>
-        <h2 className={styles.title}>Забронировать книгу</h2>
-
-        <div className={styles.bookIdRow}>Книга ID: {bookId}</div>
-
-        <FormBuilder<CreateReservationForm>
-          schema={createReservationFormSchema}
-          fields={fields}
-          onSubmit={onSubmit}
-          submitText="Забронировать"
-          isLoading={isPending}
-        />
-      </div>
-
-      {handleClose && (
-        <div onClick={handleClose} className={styles.background}></div>
-      )}
-    </>
+    <Modal isOpen={isOpen} onClose={handleClose} title="Забронировать книгу">
+      <div className={styles.bookIdRow}>Книга ID: {bookId}</div>
+      <FormBuilder<CreateReservationForm>
+        schema={createReservationFormSchema}
+        fields={fields}
+        onSubmit={onSubmit}
+        submitText="Забронировать"
+        isLoading={isPending}
+      />
+    </Modal>
   );
 };
 

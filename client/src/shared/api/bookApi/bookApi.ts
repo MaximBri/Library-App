@@ -17,7 +17,7 @@ export const bookApi = {
 
   getLibraryBooks: async (
     libraryId: number,
-    cursor: string | null = null
+    cursor: number | null = null
   ): Promise<InfiniteBookList> => {
     const { data } = await api.get(`/api/books/library/${libraryId}`, {
       params: { cursor },

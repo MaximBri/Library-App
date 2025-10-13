@@ -2,8 +2,8 @@
 
 import { useForm, type FieldValues, type Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/features/button/Button';
-import { Input } from '@/features/input/Input';
+import { Button } from '@/shared/components/button/Button';
+import { Input } from '@/shared/components/input/Input';
 import type { FormBuilderProps } from './types';
 
 export const FormBuilder = <T extends FieldValues>({

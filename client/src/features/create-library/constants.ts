@@ -1,4 +1,4 @@
-import type { FormField } from '@/shared/utils/FormBuilder/types';
+import type { FormField } from '@/shared/components/FormBuilder/types';
 import z from 'zod';
 import type { CreateLibraryForm } from './types';
 

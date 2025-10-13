@@ -25,7 +25,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     isError,
   } = useGetUserData(isAuthorized === null);
 
-  const { data: myLibraryData } = useGetMyLibrary(myLibrary === null);
+  const { data: myLibraryData, refetch: libraryRefetch } = useGetMyLibrary(
+    myLibrary === null
+  );
 
   useEffect(() => {
     const isFirstLoad = user === undefined && isAuthorized === null;
@@ -33,8 +35,11 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [user, isAuthorized]);
 
   useEffect(() => {
-    if (isAuthorized && myLibrary === null && myLibraryData) {
+    if (isAuthorized && myLibraryData) {
       setMyLibrary(myLibraryData);
+    }
+    if (isAuthorized && !myLibraryData) {
+      libraryRefetch();
     }
   }, [myLibraryData, myLibrary, isAuthorized]);
 
@@ -68,8 +73,8 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const logout = useCallback(async () => {
     await api.post('/api/auth/logout', {}, { withCredentials: true });
     queryClient.clear();
-    setIsAuthorized(false)
-    setMyLibrary(null)
+    setIsAuthorized(false);
+    setMyLibrary(null);
   }, [queryClient]);
 
   const refresh = useCallback(async () => {
@@ -88,7 +93,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     logout,
     refresh,
     isAuthorized,
-    myLibrary
+    myLibrary,
   };
 
   return <AuthContext.Provider value={ctx}>{children}</AuthContext.Provider>;

@@ -4,15 +4,14 @@ import type { BookModel } from '../books/types';
 export interface InfiniteReservationList {
   nextCursor: number | null;
   hasMore: boolean;
-  items: ReservationModel;
+  items: ReservationModel[];
 }
 
 export type ReservationStatus =
   | 'pending'
   | 'approved'
   | 'rejected'
-  | 'completed'
-  | 'cancelled';
+  | 'completed';
 
 export interface ReservationModel {
   book: Omit<BookModel, 'isReserved'>;
@@ -36,3 +35,31 @@ export interface ReserveBookModel {
   requestedEndDate: string;
   userComment?: string | undefined;
 }
+
+export interface ReservationChangeStatusModel {
+  status: 'approved' | 'rejected' | 'completed';
+  librarianComment: string;
+}
+
+export interface InfiniteReservationsModel {
+  pageParams: unknown[];
+  pages: InfiniteReservationList[];
+}
+
+export interface UseChangeReservationStatusParams {
+  reservationId: number;
+  params: ReservationChangeStatusModel;
+}
+
+export interface UseChangeReservationStatusResponse
+  extends UseChangeReservationStatusParams {
+  bookId: number;
+}
+
+export interface GetReservationParams {
+  limit?: number;
+  status?: string;
+  cursor?: number | null;
+}
+
+export type UseGetReservationsParams = Omit<GetReservationParams, 'cursor'>

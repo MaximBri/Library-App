@@ -5,10 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../../shared/hooks/useAuth';
-import { Input } from '../input/Input';
+import { Input } from '../../shared/components/input/Input';
 import { APP_ROUTES } from '@/shared/routes';
 import styles from './styles.module.scss';
-import { Button } from '../button/Button';
+import { Button } from '../../shared/components/button/Button';
 
 const schema = z.object({
   email: z.string(),

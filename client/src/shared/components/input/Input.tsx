@@ -1,5 +1,3 @@
-'use client';
-
 import React, {
   forwardRef,
   useCallback,
@@ -14,7 +12,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   className?: string;
   isEditing?: boolean;
   value?: string | number;
-  options?: string[]
+  options?: string[];
 };
 
 export const Input = forwardRef<HTMLInputElement, Props>(
@@ -58,9 +56,15 @@ export const Input = forwardRef<HTMLInputElement, Props>(
     const [isOpen, setIsOpen] = useState(false);
     const [highlighted, setHighlighted] = useState<number>(-1);
 
-    const filtered = (options || []).filter((opt) =>
-      opt.toLowerCase().includes((inputValue || '').toLowerCase())
-    );
+    const inputLower = (inputValue || '').toLowerCase();
+    const opts = options || [];
+
+    const isExactOption = opts.some((opt) => opt.toLowerCase() === inputLower);
+
+    const filtered = opts.filter((opt) => {
+      if (inputLower === '' || isExactOption) return true;
+      return opt.toLowerCase().includes(inputLower);
+    });
 
     const handleFocus = () => {
       if (filtered.length > 0) setIsOpen(true);
@@ -109,7 +113,6 @@ export const Input = forwardRef<HTMLInputElement, Props>(
     };
 
     const handleSelect = (option: string) => {
-      // при выборе опции — считаем это как ввод значения
       triggerOnChange(option);
       setIsOpen(false);
       inputRef.current?.focus();

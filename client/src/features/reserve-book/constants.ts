@@ -111,7 +111,12 @@ export const reviewReservationSchema = z.object({
 export type ReviewReservationInput = z.infer<typeof reviewReservationSchema>;
 
 export const updateReservationStatusSchema = z.object({
-  status: z.enum(['pending', 'approved', 'rejected', 'completed', 'cancelled']),
+  status: z.enum(['approved', 'rejected', 'completed']),
+  librarianComment: z
+    .string()
+    .max(1000, 'Комментарий не должен превышать 1000 символов')
+    .optional()
+    .or(z.literal('')),
 });
 
 export type UpdateReservationStatusInput = z.infer<
@@ -247,4 +252,3 @@ export const dateHelpers = {
     });
   },
 };
-

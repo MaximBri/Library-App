@@ -2,12 +2,12 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '../../shared/hooks/useAuth';
-import { Input } from '../input/Input';
+import { Input } from '../../shared/components/input/Input';
 import { useNavigate } from 'react-router-dom';
 import { APP_ROUTES } from '@/shared/routes';
 import { useState, type FC } from 'react';
 import styles from './styles.module.scss';
-import { Button } from '../button/Button';
+import { Button } from '../../shared/components/button/Button';
 
 const schema = z.object({
   email: z.string(),

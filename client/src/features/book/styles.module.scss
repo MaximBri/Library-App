@@ -1,44 +1,200 @@
 .book {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border: 2px solid $border;
-  border-radius: 10px;
-  padding: 10px;
-  width: 350px;
-  gap: 10px;
+  background: $bg-card-light;
+  border-radius: 14px;
+  border: 1px solid $bg-light;
+  padding: 14px;
+  width: 360px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(31, 41, 55, 0.06);
+  transition: transform $transition-fast, box-shadow $transition-fast,
+    border-color $transition-fast;
+  will-change: transform;
+  cursor: default;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(31, 41, 55, 0.1);
+    border-color: transparent;
+  }
+  &__nav {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+    &-item {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  &__accent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, $accent-start 0%, $accent-end 100%);
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+    z-index: 1;
+    box-shadow: 0 0 18px rgba(124, 58, 237, 0.12);
+  }
+
   &__link {
     display: flex;
-    gap: 15px;
+    gap: 18px;
+    text-decoration: none;
+    color: inherit;
+    align-items: flex-start;
+    z-index: 2;
   }
-  &__image {
-    margin: auto 0;
-    width: 100px;
-    height: 100px;
+
+  &__cover {
+    flex: 0 0 96px;
+    width: 96px;
+    height: 128px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #fbfdff 0%, #f6f8fb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(31, 41, 55, 0.06),
+      inset 0 -6px 18px rgba(0, 0, 0, 0.02);
+    transition: transform $transition-fast;
+
+    img {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .book:hover & {
+      transform: translateY(-4px);
+    }
   }
+
   &__main {
     display: flex;
-    gap: 10px;
     flex-direction: column;
-    align-items: baseline;
-    line-height: 1;
-    &-title {
-      font-size: 22px;
-    }
-    &-author {
-      font-size: 20px;
-      font-weight: 400;
-      margin-bottom: 10px;
-    }
-    &-theme {
-      font-weight: 400;
-      font-size: 20px;
+    gap: 6px;
+    min-width: 0;
+    z-index: 2;
+  }
+
+  &__title {
+    font-size: 18px;
+    color: $bg-dark;
+    margin: 0;
+    font-weight: 600;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__author {
+    margin: 0;
+    font-size: 14px;
+    color: $text-muted;
+    font-weight: 500;
+  }
+
+  &__theme {
+    margin: 0;
+    font-size: 13px;
+    color: darken($text-muted, 6%);
+    font-weight: 400;
+  }
+
+  &__description {
+    margin-top: 6px;
+    font-size: 13px;
+    color: $text-muted;
+    line-height: 1.35;
+    max-height: calc(1.35em * 3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  &__controls {
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+    z-index: 2;
+  }
+
+  &__button {
+    font-size: 15px;
+    padding: 10px 16px;
+    width: auto;
+    border-radius: 10px;
+    transition: transform $transition-fast, box-shadow $transition-fast;
+    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.06);
+    background: linear-gradient(90deg, $accent-start, $accent-end);
+    color: #fff;
+
+    &:disabled,
+    &[aria-disabled='true'] {
+      background: linear-gradient(90deg, #cbd5e1, #e6e9ef);
+      color: #9aa3b2;
+      box-shadow: none;
+      cursor: not-allowed;
     }
   }
-  &__button{
-    font-size: 18px;
-    padding: 10px 15px;
-    width: min-content;
-    margin: 0 auto;
+
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(17, 24, 39, 0.28),
+      rgba(17, 24, 39, 0.36)
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    pointer-events: none;
+    transition: opacity $transition-fast;
+
+    .book__badge,
+    & .book__badge {
+      pointer-events: auto;
+    }
+  }
+
+  &__badge {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@media (max-width: 420px) {
+  .book {
+    width: 100%;
+    padding: 12px;
+    &__cover {
+      width: 84px;
+      height: 112px;
+    }
   }
 }

@@ -1,18 +1,16 @@
-'use client';
-
 import { type FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateLibrary } from '@/shared/api/hooks/libraries/useCreateLibrary';
-
-import styles from './styles.module.scss';
 import type { CreateLibraryForm } from './types';
 import { createLibrarySchema, libraryFields } from './constants';
-import { FormBuilder } from '@/shared/utils/FormBuilder/FormBuilder';
+import { Modal } from '@/shared/components/Modal/Modal';
+import { FormBuilder } from '@/shared/components/FormBuilder/FormBuilder';
 
-export const CreateLibrary: FC<{ handleClose: () => void }> = ({
-  handleClose,
-}) => {
+export const CreateLibrary: FC<{
+  isOpen: boolean;
+  handleClose: () => void;
+}> = ({ isOpen, handleClose }) => {
   const { mutate: createLibrary, isPending } = useCreateLibrary();
 
   const { reset } = useForm<CreateLibraryForm>({
@@ -21,23 +19,22 @@ export const CreateLibrary: FC<{ handleClose: () => void }> = ({
 
   const onSubmit = (data: CreateLibraryForm) => {
     createLibrary(data, {
-      onSuccess: () => reset(),
+      onSuccess: () => {
+        reset();
+        handleClose();
+      },
     });
   };
 
   return (
-    <>
-      <section className={styles.createLibrary}>
-        <h2 className={styles.title}>Создать библиотеку</h2>
-        <FormBuilder
-          schema={createLibrarySchema}
-          fields={libraryFields}
-          onSubmit={onSubmit}
-          isLoading={isPending}
-        />
-      </section>
-      <div onClick={handleClose} className={styles.background}></div>
-    </>
+    <Modal isOpen={isOpen} onClose={handleClose} title="Создать библиотеку">
+      <FormBuilder
+        schema={createLibrarySchema}
+        fields={libraryFields}
+        onSubmit={onSubmit}
+        isLoading={isPending}
+      />
+    </Modal>
   );
 };
 

@@ -3,7 +3,7 @@ import { bookApi } from '../../bookApi/bookApi';
 
 export const useGetLibraryBooks = (libraryId: number) => {
   return useQuery({
-    queryKey: [libraryId],
+    queryKey: ['books', libraryId],
     queryFn: () => bookApi.getLibraryBooks(libraryId),
   });
 };

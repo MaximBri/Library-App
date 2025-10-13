@@ -1,17 +1,25 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { reservationApi } from '../../reservations/reservationApi';
+import type { UseGetReservationsParams } from './types';
 
-export const useGetReservations = () => {
+export const useGetReservations = ({
+  limit = 10,
+  status = 'all',
+}: UseGetReservationsParams = {}) => {
   return useInfiniteQuery({
-    queryKey: ['reservations'],
-    queryFn: async () => {
-      const data = await reservationApi.getReservations();
+    queryKey: ['reservations', limit, status],
+    queryFn: async ({ pageParam = null }) => {
+      const data = await reservationApi.getReservations({
+        limit,
+        status,
+        cursor: pageParam,
+      });
       return data;
     },
     getNextPageParam: (lastPage) => {
       return lastPage.nextCursor || undefined;
     },
     initialPageParam: null,
-    staleTime: Infinity,
+    staleTime: 1000 * 60 * 10,
   });
 };

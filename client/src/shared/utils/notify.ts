@@ -1,46 +1,23 @@
-export type ToastType = 'success' | 'error' | 'info' | 'warning';
-export type NotifyOptions = {
-  id?: string;
-  duration?: number;
-  pauseOnHover?: boolean;
+import { toast, type ToastOptions } from 'react-hot-toast';
+
+export type NotifyType = 'success' | 'error' | 'info' | 'loading';
+
+const baseOpts: ToastOptions = {
+  duration: 4000,
 };
 
-export type ToastPayload = {
-  id: string;
-  message: string;
-  type: ToastType;
-  duration: number;
-  pauseOnHover: boolean;
+export const notify = (text: string, type: NotifyType = 'info', opts?: ToastOptions) => {
+  const options: ToastOptions = { ...baseOpts, ...opts };
+
+  switch (type) {
+    case 'success':
+      return toast.success(text, options);
+    case 'error':
+      return toast.error(text, options);
+    case 'loading':
+      return toast.loading(text, { ...options, duration: Infinity });
+    case 'info':
+    default:
+      return toast(text, options);
+  }
 };
-
-export const TOAST_EVENT = 'app-toast';
-
-export function notify(
-  message: string,
-  type: ToastType = 'info',
-  options: NotifyOptions = {}
-) {
-  const id =
-    options.id ?? `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`;
-  const payload: ToastPayload = {
-    id,
-    message,
-    type,
-    duration: options.duration ?? 4000,
-    pauseOnHover: options.pauseOnHover ?? true,
-  };
-
-  if (typeof window !== 'undefined' && window.dispatchEvent) {
-    window.dispatchEvent(new CustomEvent(TOAST_EVENT, { detail: payload }));
-  }
-
-  return id;
-}
-
-export function removeToastById(id: string) {
-  if (typeof window !== 'undefined' && window.dispatchEvent) {
-    window.dispatchEvent(
-      new CustomEvent(`${TOAST_EVENT}-remove`, { detail: id })
-    );
-  }
-}

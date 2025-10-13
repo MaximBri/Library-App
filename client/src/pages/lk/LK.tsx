@@ -1,4 +1,4 @@
-import { Input } from '@/features/input/Input';
+import { Input } from '@/shared/components/input/Input';
 import { APP_ROLES, RolesMap, type T_ROLES } from '@/shared/constants';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useState, type MouseEvent } from 'react';
@@ -6,7 +6,7 @@ import styles from './styles.module.scss';
 import { fields, updateUserDataSchema } from './constants';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/features/button/Button';
+import { Button } from '@/shared/components/button/Button';
 import type { UpdateUserForm } from './types';
 import { useUpdateUserData } from '@/shared/api/hooks/user/useUpdateUserData';
 import { ChangeRole } from '@/features/change-role/ChangeRole';

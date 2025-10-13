@@ -14,12 +14,33 @@ import { UsersPage } from '@/pages/users';
 import { APP_ROLES } from '@/shared/constants';
 import { BooksPage } from '@/pages/books';
 import { ReservationsPage } from '@/pages/reservations';
+import { Toaster } from 'react-hot-toast';
 
 const queryClient = new QueryClient();
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <Toaster
+        position="bottom-right"
+        reverseOrder={false}
+        gutter={12}
+        toastOptions={{
+          duration: 4000,
+          style: {
+            borderRadius: '10px',
+            padding: '10px 14px',
+            fontWeight: 500,
+            boxShadow: '0 8px 24px rgba(16,24,40,0.12)',
+          },
+          success: {
+            icon: '✅',
+          },
+          error: {
+            icon: '❌',
+          },
+        }}
+      />
       <AuthProvider>
         <BrowserRouter>
           <Routes>

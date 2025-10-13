@@ -10,10 +10,28 @@
   flex-direction: column;
   gap: 12px;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
+  position: relative;
+  &__accent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, $accent-start 0%, $accent-end 100%);
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    z-index: 1;
+    box-shadow: 0 0 18px rgba(124, 58, 237, 0.12);
+  }
 }
 
 .reservation:hover {
   box-shadow: 0 12px 30px rgba(16, 24, 40, 0.08);
+}
+
+
+.card{
+  position: relative;
 }
 
 .row {
@@ -112,6 +130,35 @@
   border-radius: 8px;
   padding: 10px 12px;
   border: 1px dashed rgba(15, 23, 42, 0.03);
+}
+
+.changeBtn {
+  background: transparent;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.08s ease;
+  font-size: 13px;
+}
+
+.changeBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.04);
+}
+
+.overdue {
+  position: absolute;
+  top: -10px;
+  left: 0;
+  width: min-content;
+  background-color: $error;
+  border-radius: 6px;
+  padding: 4px;
+  color: $bg-light;
+  line-height: 1;
+  z-index: 10;
 }
 
 @media (max-width: 720px) {

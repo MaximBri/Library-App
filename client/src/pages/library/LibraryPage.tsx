@@ -7,14 +7,15 @@ import { useParams } from 'react-router-dom';
 import PlusSvg from '@/shared/icons/plus.svg';
 import styles from './styles.module.scss';
 import { useGetLibraryBooksInfinite } from '@/shared/api/hooks/books/useGetLibraryBooksInfinite';
-import { Button } from '@/features/button/Button';
+import { Button } from '@/shared/components/button/Button';
 import { Book } from '@/features/book/Book';
 import { EmptyList } from '@/features/empty-list/EmptyList';
+import { Loader } from '@/shared/components/loader/Loader';
 
 export const LibraryPage = () => {
   const { id } = useParams();
   const { user } = useAuth();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetLibraryBooksInfinite(Number(id));
 
   const [isAddBookModalOpen, setIsAddBookModalOpen] = useState<boolean>(false);
@@ -23,6 +24,10 @@ export const LibraryPage = () => {
   const isAdmin = user?.role === APP_ROLES.ADMIN;
   const isOwner = user?.id === data?.pages?.[0]?.library?.librarian?.id;
   const books = data?.pages.flatMap((page) => page.items) || [];
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <section className={styles['page']}>
@@ -58,11 +63,10 @@ export const LibraryPage = () => {
         />
       )}
 
-      {isAddBookModalOpen &&
-        createPortal(
-          <CreateBook handleClose={handleChangeBookModal} />,
-          document.body
-        )}
+      <CreateBook
+        isOpen={isAddBookModalOpen}
+        handleClose={handleChangeBookModal}
+      />
     </section>
   );
 };
