@@ -34,7 +34,7 @@ export const CreateReservationInput = z
   )
 
 export const ReviewReservationInput = z.object({
-  status: z.enum(['approved', 'rejected']),
+  status: z.enum(['approved', 'rejected', 'completed']),
   librarianComment: z.string().max(1000).optional(),
 })
 

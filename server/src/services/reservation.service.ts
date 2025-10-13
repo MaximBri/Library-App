@@ -27,7 +27,11 @@ export async function createReservation(data: {
   })
 
   if (existingReservation) {
-    throw { status: 400, message: 'You already have a pending or approved reservation for this book' }
+    throw {
+      status: 400,
+      message:
+        'You already have a pending or approved reservation for this book',
+    }
   }
 
   const conflictingReservations = await prisma.reservation.findMany({
@@ -58,7 +62,10 @@ export async function createReservation(data: {
   })
 
   if (conflictingReservations.length > 0) {
-    throw { status: 400, message: 'Book is already reserved for the requested period' }
+    throw {
+      status: 400,
+      message: 'Book is already reserved for the requested period',
+    }
   }
 
   const reservation = await prisma.reservation.create({
@@ -100,7 +107,7 @@ export async function createReservation(data: {
 export async function reviewReservation(
   reservationId: number,
   librarianId: number,
-  status: 'approved' | 'rejected',
+  status: 'approved' | 'rejected' | 'completed',
   librarianComment?: string
 ) {
   const reservation = await prisma.reservation.findUnique({
@@ -119,14 +126,21 @@ export async function reviewReservation(
   }
 
   if (reservation.book.library.librarianId !== librarianId) {
-    throw { status: 403, message: 'You can only review reservations for your library' }
+    throw {
+      status: 403,
+      message: 'You can only review reservations for your library',
+    }
   }
 
-  if (reservation.status !== 'pending') {
-    throw { status: 400, message: 'Only pending reservations can be reviewed' }
-  }
-
+  // Правила изменения статусов
   if (status === 'approved') {
+    if (reservation.status !== 'pending') {
+      throw {
+        status: 400,
+        message: 'Only pending reservations can be approved',
+      }
+    }
+
     const conflictingReservations = await prisma.reservation.findMany({
       where: {
         bookId: reservation.bookId,
@@ -156,17 +170,40 @@ export async function reviewReservation(
     })
 
     if (conflictingReservations.length > 0) {
-      throw { status: 400, message: 'Cannot approve: book is already reserved for this period' }
+      throw {
+        status: 400,
+        message: 'Cannot approve: book is already reserved for this period',
+      }
     }
+  } else if (status === 'rejected') {
+    if (reservation.status !== 'pending') {
+      throw {
+        status: 400,
+        message: 'Only pending reservations can be rejected',
+      }
+    }
+  } else if (status === 'completed') {
+    if (reservation.status !== 'approved') {
+      throw {
+        status: 400,
+        message: 'Only approved reservations can be marked as completed',
+      }
+    }
+  }
+
+  const updateData: any = {
+    status,
+    librarianComment,
+    reviewedAt: new Date(),
+  }
+
+  if (status === 'completed') {
+    updateData.returnedAt = new Date()
   }
 
   const updated = await prisma.reservation.update({
     where: { id: reservationId },
-    data: {
-      status,
-      librarianComment,
-      reviewedAt: new Date(),
-    },
+    data: updateData,
     include: {
       user: {
         select: {
@@ -445,7 +482,10 @@ export async function cancelReservation(id: number, userId: number) {
   }
 
   if (!['pending', 'approved'].includes(reservation.status)) {
-    throw { status: 400, message: 'Only pending or approved reservations can be cancelled' }
+    throw {
+      status: 400,
+      message: 'Only pending or approved reservations can be cancelled',
+    }
   }
 
   const updated = await prisma.reservation.update({

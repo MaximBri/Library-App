@@ -64,7 +64,7 @@ export async function getBookById(id: number) {
   const activeReservation = await prisma.reservation.findFirst({
     where: {
       bookId: id,
-      status: 'active',
+      status: 'approved',
     },
   })
 
@@ -106,7 +106,7 @@ export async function getBooks(params: {
   const activeReservations = await prisma.reservation.findMany({
     where: {
       bookId: { in: bookIds },
-      status: 'active',
+      status: 'approved',
     },
     select: { bookId: true },
   })
@@ -220,7 +220,7 @@ export async function getBooksByLibraryId(
   const activeReservations = await prisma.reservation.findMany({
     where: {
       bookId: { in: bookIds },
-      status: 'active',
+      status: 'approved',
     },
     select: { bookId: true },
   })
