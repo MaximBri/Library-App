@@ -1,19 +1,25 @@
 import type { BookModel } from '@/shared/api/hooks/books/types';
 import { useState, type FC } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import BookSvg from './icons/book.svg';
 import styles from './styles.module.scss';
 import { Button } from '../../shared/components/button/Button';
 import ReserveBook from '../reserve-book/ReserveBook';
 import { useAuth } from '@/shared/hooks/useAuth';
 import EditSvg from './icons/edit.svg';
-import DeleteSvg from './icons/delete.svg'
+import DeleteSvg from './icons/delete.svg';
+import { EditBook } from '../edit-book/EditBook';
+import { DeleteBook } from '../delete-book/DeleteBook';
 
 export const Book: FC<{ data: BookModel }> = ({ data }) => {
   const { id } = useParams();
   const { myLibrary } = useAuth();
 
   const [isReservedModalOpen, setIsReserverdModalOpen] =
+    useState<boolean>(false);
+  const [isUpdateBookModalOpen, setIsUpdateBookModalOpen] =
+    useState<boolean>(false);
+  const [isDeleteBookModalOpen, setIsDeleteBookModalOpen] =
     useState<boolean>(false);
 
   const handleChangeReservedModal = (arg: boolean) =>
@@ -29,10 +35,16 @@ export const Book: FC<{ data: BookModel }> = ({ data }) => {
       >
         {isOwner && (
           <div className={styles['book__nav']}>
-            <button className={styles['book__nav-item']}>
+            <button
+              onClick={() => setIsUpdateBookModalOpen(true)}
+              className={styles['book__nav-item']}
+            >
               <img src={EditSvg} alt="edit" />
             </button>
-            <button className={styles['book__nav-item']}>
+            <button
+              onClick={() => setIsDeleteBookModalOpen(true)}
+              className={styles['book__nav-item']}
+            >
               <img src={DeleteSvg} alt="delete" />
             </button>
           </div>
@@ -72,6 +84,16 @@ export const Book: FC<{ data: BookModel }> = ({ data }) => {
         bookId={data.id}
         isOpen={isReservedModalOpen}
         handleClose={() => setIsReserverdModalOpen(false)}
+      />
+      <EditBook
+        isOpen={isUpdateBookModalOpen}
+        handleClose={() => setIsUpdateBookModalOpen(false)}
+        data={data}
+      />
+      <DeleteBook
+        isOpen={isDeleteBookModalOpen}
+        handleClose={() => setIsDeleteBookModalOpen(false)}
+        bookData={data}
       />
     </>
   );

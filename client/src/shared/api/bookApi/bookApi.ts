@@ -24,4 +24,17 @@ export const bookApi = {
     });
     return data;
   },
+
+  editLibraryBook: async (bookId: number, bookData: CreateBookForm) => {
+    const { data } = await api.patch(`/api/books/${bookId}`, {
+      ...bookData,
+      publishingYear: Number(bookData.publishingYear),
+    });
+    return data;
+  },
+
+  deleteBook: async (bookId: number) => {
+    const { data } = await api.delete(`/api/books/${bookId}`);
+    return data;
+  },
 };

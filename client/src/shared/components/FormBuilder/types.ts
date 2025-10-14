@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { SubmitHandler } from 'react-hook-form';
+import type { DefaultValues, SubmitHandler } from 'react-hook-form';
 
 export type FieldType = 'text' | 'number' | 'email' | 'password' | 'textarea';
 
@@ -17,4 +17,5 @@ export interface FormBuilderProps<T> {
   onSubmit: SubmitHandler<T>;
   submitText?: string;
   isLoading?: boolean;
+  defaultValues?: DefaultValues<T>
 }

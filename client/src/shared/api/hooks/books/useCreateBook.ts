@@ -6,15 +6,23 @@ import {
 import { bookApi } from '../../bookApi/bookApi';
 import type { CreateBookModel } from '@/features/create-book/types';
 import type { BookModel } from './types';
+import type { LibraryModel } from '@/shared/providers/types';
 
-interface BooksResponse {
+export interface BooksResponse {
   items: BookModel[];
   nextCursor: string | null;
+  library: LibraryModel
   hasMore: boolean;
+}
+
+export interface BooksResponseInfinite {
+  pageParams: unknown[],
+  pages: BooksResponse[]
 }
 
 export const useCreateBook = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (bookData: CreateBookModel) =>
       await bookApi.createBook(bookData.libraryId, bookData),

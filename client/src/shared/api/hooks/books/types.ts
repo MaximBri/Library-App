@@ -1,3 +1,4 @@
+import type { CreateBookForm } from '@/features/create-book/types';
 import type { LibraryModel } from '@/shared/providers/types';
 
 export interface InfiniteBookList {
@@ -28,4 +29,9 @@ export interface ReserveBookModel {
   requestedStartDate: string;
   requestedEndDate: string;
   userComment?: string | undefined;
+}
+
+export interface UpdateBookParams {
+  bookId: number;
+  bookData: CreateBookForm;
 }

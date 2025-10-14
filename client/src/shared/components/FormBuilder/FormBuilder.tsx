@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/shared/components/button/Button';
 import { Input } from '@/shared/components/input/Input';
 import type { FormBuilderProps } from './types';
+import { useEffect } from 'react';
 
 export const FormBuilder = <T extends FieldValues>({
   schema,
@@ -12,12 +13,20 @@ export const FormBuilder = <T extends FieldValues>({
   onSubmit,
   submitText = 'Отправить',
   isLoading = false,
+  defaultValues,
 }: FormBuilderProps<T>) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<T>({ resolver: zodResolver(schema) });
+  } = useForm<T>({ resolver: zodResolver(schema), defaultValues });
+
+  useEffect(() => {
+    if (defaultValues) {
+      reset(defaultValues);
+    }
+  }, [reset, defaultValues]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
