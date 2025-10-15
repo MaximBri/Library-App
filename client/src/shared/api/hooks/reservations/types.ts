@@ -41,8 +41,12 @@ export interface ReservationChangeStatusModel {
   librarianComment: string;
 }
 
-export interface InfiniteReservationsModel {
+export interface InfiniteResponse {
   pageParams: unknown[];
+  pages: unknown[];
+}
+
+export interface InfiniteReservationsModel extends InfiniteResponse {
   pages: InfiniteReservationList[];
 }
 
@@ -62,4 +66,15 @@ export interface GetReservationParams {
   cursor?: number | null;
 }
 
-export type UseGetReservationsParams = Omit<GetReservationParams, 'cursor'>
+export type UseGetReservationsParams = Omit<GetReservationParams, 'cursor'>;
+
+export interface UseGetMyReservationsParams
+  extends UseGetMyReservationsInfiniteParams {
+  cursor: number | null;
+}
+
+export interface UseGetMyReservationsInfiniteParams {
+  userId?: number;
+  limit: number;
+  status: string;
+}

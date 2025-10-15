@@ -8,6 +8,7 @@ import StatusModal from '../status-modal/StatusModal';
 import { useChangeReservationStatus } from '@/shared/api/hooks/reservations/useChangeReservationStatus';
 import { useParams } from 'react-router-dom';
 import { notify } from '@/shared/utils/notify';
+import { useCancelReservation } from '@/shared/api/hooks/reservations/useCancelReservation';
 
 export const Reservation: FC<{
   data: ReservationModel;
@@ -23,6 +24,7 @@ export const Reservation: FC<{
   const { mutate: updateStatus, isPending } = useChangeReservationStatus(
     Number(id)
   );
+  const { mutate: cancelReservation } = useCancelReservation();
 
   const handleOpen = () => setIsModalOpen(true);
   const handleClose = () => setIsModalOpen(false);
@@ -48,12 +50,16 @@ export const Reservation: FC<{
           onStatusChanged?.();
         },
         onError: (err: any) => {
-          console.log(err)
+          console.log(err);
           if (err.message !== 'Unauthorized')
             notify('Ошибка обновления статуса', 'error');
         },
       }
     );
+  };
+
+  const handleCancelReservation = () => {
+    cancelReservation(data.id);
   };
 
   const getFormatTime = (date: string) =>
@@ -71,7 +77,8 @@ export const Reservation: FC<{
           <div className={styles.info}>
             <h2 className={styles.title}>Заявка №{data.id}</h2>
             <h3 className={styles.subtitle}>
-              Хочет взять: «{data.book.name}», автор: {data.book.author}
+              {isLibrarian ? 'Хочет взять: ' : 'Хочу взять: '}«{data.book.name}»,
+              автор: {data.book.author}
             </h3>
             <h4 className={styles.title}>
               На время:
@@ -84,7 +91,7 @@ export const Reservation: FC<{
           </div>
 
           <div className={styles.meta}>
-            <h2 className={styles.user}>От: {nickname}</h2>
+            {isLibrarian && <h2 className={styles.user}>От: {nickname}</h2>}
 
             <div className={styles.statusRow}>
               <div
@@ -108,13 +115,27 @@ export const Reservation: FC<{
                     Изменить статус
                   </button>
                 )}
+              {!isLibrarian && data.status === 'pending' && (
+                <button
+                  className={styles.changeBtn}
+                  onClick={handleCancelReservation}
+                  aria-label="Отменить"
+                >
+                  Отменить
+                </button>
+              )}
             </div>
           </div>
         </div>
 
-        {data.userComment && (
+        {data.userComment && isLibrarian && (
           <p className={styles.comment}>
             Комментарий пользователя: {data.userComment}
+          </p>
+        )}
+        {data.librarianComment && !isLibrarian && (
+          <p className={styles.comment}>
+            Комментарий библиотекаря: {data.librarianComment}
           </p>
         )}
       </div>

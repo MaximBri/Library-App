@@ -132,7 +132,6 @@ export async function reviewReservation(
     }
   }
 
-  // Правила изменения статусов
   if (status === 'approved') {
     if (reservation.status !== 'pending') {
       throw {

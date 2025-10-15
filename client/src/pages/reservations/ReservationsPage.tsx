@@ -6,9 +6,8 @@ import { APP_ROLES } from '@/shared/constants';
 import { useParams } from 'react-router-dom';
 import { Loader } from '@/shared/components/loader/Loader';
 import { useState } from 'react';
-import { LIMIT_OPTIONS, STATUS_MAP, STATUS_OPTIONS } from './constants';
-import Input from '@/shared/components/input/Input';
 import { EmptyList } from '@/features/empty-list/EmptyList';
+import { ReservationsSort } from '@/features/reservations-sort/ReservationsSort';
 
 export const ReservationsPage = () => {
   const { user, myLibrary } = useAuth();
@@ -21,8 +20,7 @@ export const ReservationsPage = () => {
     useGetReservations({ limit, status });
 
   const reservations = data?.pages.flatMap((page) => page.items) || [];
-  const currentStatusLabel =
-    STATUS_OPTIONS.find((s) => s.value === status)?.label ?? 'Все';
+
   const isOwner =
     user?.role === APP_ROLES.LIBRARIAN && myLibrary?.id === Number(id);
 
@@ -33,39 +31,12 @@ export const ReservationsPage = () => {
   return (
     <section className={styles['page']}>
       <h1>Заявки читателей библиотеки:</h1>
-      <div className={styles['page__controls']}>
-        <div className={styles['page__control']}>
-          <label htmlFor="limit">Лимит на странице</label>
-          <Input
-            id="limit"
-            name="limit"
-            value={String(limit)}
-            options={LIMIT_OPTIONS}
-            placeholder="Лимит"
-            onChange={(e) => {
-              const v = String((e.target as HTMLInputElement).value || '');
-              const n = Number(v) || 10;
-              setLimit(n);
-            }}
-          />
-        </div>
-
-        <div className={styles['page__control']}>
-          <label htmlFor="status">Статус</label>
-          <Input
-            id="status"
-            name="status"
-            value={currentStatusLabel}
-            options={STATUS_OPTIONS.map((s) => s.label)}
-            placeholder="Статус"
-            onChange={(e) => {
-              const label = String((e.target as HTMLInputElement).value || '');
-              const mapped = STATUS_MAP[label] ?? 'all';
-              setStatus(mapped);
-            }}
-          />
-        </div>
-      </div>
+      <ReservationsSort
+        limit={limit}
+        setLimit={setLimit}
+        setStatus={setStatus}
+        status={status}
+      />
 
       <ul className={styles['page__list']}>
         {reservations.map((reservation) => (
@@ -75,7 +46,7 @@ export const ReservationsPage = () => {
             key={reservation.id}
           />
         ))}
-        {!reservations.length && <EmptyList title='Заявок пока нет'/>}
+        {!reservations.length && <EmptyList title="Заявок пока нет" />}
       </ul>
 
       {hasNextPage && (

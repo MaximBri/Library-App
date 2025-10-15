@@ -29,6 +29,9 @@ export const Header = () => {
             </Link>
           </>
         )}
+        {!isAdmin && (
+          <Link to={APP_ROUTES.MY_RESERVATIONS}>Мои бронирования</Link>
+        )}
         {isAdmin && <Link to={APP_ROUTES.USERS}>Пользователи</Link>}
         {username && <Link to={APP_ROUTES.LK}>{username}</Link>}
         {isAuthorized === false && <Link to={APP_ROUTES.LOGIN}>Войти</Link>}

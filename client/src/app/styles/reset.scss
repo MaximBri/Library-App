@@ -1,9 +1,6 @@
-/* Modern CSS Reset */
 :root {
   --vh: 1vh;
 }
-
-/* Box sizing rules */
 
 *,
 *::before,
@@ -17,7 +14,6 @@ body {
   overflow: hidden;
 }
 
-/* Remove default margin and padding */
 body,
 h1,
 h2,
@@ -35,16 +31,14 @@ dd {
   margin: 0;
 }
 
-/* Set core root defaults */
 html {
   box-sizing: border-box;
   scroll-behavior: smooth;
   height: 100%;
-  text-size-adjust: 100%; // Prevent font scaling on orientation change
+  text-size-adjust: 100%; 
   -webkit-text-size-adjust: 100%;
 }
 
-/* Set core body defaults */
 body {
   height: 100%;
   min-height: 100%;
@@ -55,7 +49,6 @@ body {
   text-rendering: optimizeSpeed;
 }
 
-/* Remove list styles and allow proper margin/padding */
 ul,
 ol {
   margin: 0;
@@ -63,7 +56,6 @@ ol {
   list-style: none;
 }
 
-/* Remove default link styles */
 a,
 a:active,
 a:visited {
@@ -71,33 +63,30 @@ a:visited {
   color: inherit;
   text-decoration: none;
 
-  -webkit-tap-highlight-color: transparent; // Remove tap highlight on mobile
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Make images easier to work with */
 img,
 picture,
 video,
 canvas,
 svg {
-  user-select: none; // Prevent image selection
+  user-select: none; 
 
   display: block;
 
   max-width: 100%;
-  height: auto; // Maintain aspect ratio
+  height: auto; 
 
-  -webkit-user-drag: none; // Prevent image dragging
+  -webkit-user-drag: none; 
 }
 
-/* Preserve aspect ratio */
 iframe {
-  display: block; // Remove inline spacing
+  display: block; 
   max-width: 100%;
   border: none;
 }
 
-/* Form elements */
 input,
 button,
 textarea,
@@ -108,14 +97,13 @@ select {
   font: inherit;
   color: inherit;
 
-  -webkit-appearance: none; // Remove default styles on iOS
+  -webkit-appearance: none; 
   appearance: none;
   background: none;
   border: none;
   outline: none;
 }
 
-/* Remove default button styles */
 button {
   cursor: pointer;
 
@@ -128,20 +116,17 @@ button {
   border: none;
 }
 
-/* Remove default fieldset styles */
 fieldset {
   margin: 0;
   padding: 0;
   border: none;
 }
 
-/* Text selection */
 ::selection {
   text-shadow: none;
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-/* Avoid text overflows */
 p,
 h1,
 h2,
@@ -152,14 +137,12 @@ h6 {
   overflow-wrap: break-word;
 }
 
-/* Table defaults */
 table {
   border-spacing: 0;
   border-collapse: collapse;
   width: 100%;
 }
 
-/* Create a root stacking context */
 #root {
   isolation: isolate;
   height: 100vh;
@@ -168,14 +151,12 @@ table {
   height: calc(var(--vh) * 100);
 }
 
-/* Remove default dialog styles */
 dialog {
   padding: 0;
   background: transparent;
   border: none;
 }
 
-/* Remove details marker */
 details summary {
   cursor: pointer;
   list-style: none;
@@ -184,7 +165,6 @@ details summary {
   }
 }
 
-/* Correct line height in all browsers */
 pre,
 code,
 kbd,
@@ -193,7 +173,6 @@ samp {
   font-size: 1em;
 }
 
-/* Remove all animations and transitions for people that prefer not to see them */
 @media (prefers-reduced-motion: reduce) {
   html:focus-within {
     scroll-behavior: auto;

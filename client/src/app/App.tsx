@@ -15,6 +15,7 @@ import { APP_ROLES } from '@/shared/constants';
 import { BooksPage } from '@/pages/books';
 import { ReservationsPage } from '@/pages/reservations';
 import { Toaster } from 'react-hot-toast';
+import { MyReservationsPage } from '@/pages/my-reservations';
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,10 @@ function App() {
               <Route path={APP_ROUTES.BOOKS}>
                 <Route index element={<BooksPage />} />
               </Route>
+              <Route
+                path={APP_ROUTES.MY_RESERVATIONS}
+                element={<MyReservationsPage />}
+              />
             </Route>
           </Routes>
         </BrowserRouter>

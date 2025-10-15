@@ -6,5 +6,6 @@ export const APP_ROUTES = {
   USERS: '/users',
   BOOKS: '/books',
   LK: '/lk',
-  RESERVATIONS: 'reservations'
+  RESERVATIONS: 'reservations',
+  MY_RESERVATIONS: 'my-reservations'
 };

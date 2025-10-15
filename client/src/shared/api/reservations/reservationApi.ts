@@ -38,4 +38,30 @@ export const reservationApi = {
     );
     return data;
   },
+
+  getMyReservations: async (
+    userId: number,
+    limit: number,
+    status: string,
+    cursor: number | null = null
+  ) => {
+    const searchParams = new URLSearchParams();
+    if (limit) searchParams.set('limit', String(limit));
+    if (status && status !== 'all') searchParams.set('status', status);
+
+    const { data } = await api.get(
+      `/api/reservations?userId=${userId}${
+        searchParams.toString() ? `&${searchParams.toString()}` : ''
+      }`,
+      {
+        params: { cursor },
+      }
+    );
+    return data;
+  },
+
+  cancelReservation: async (reservationId: number) => {
+    const { data } = await api.post(`/api/reservations/${reservationId}/cancel`);
+    return data;
+  },
 };

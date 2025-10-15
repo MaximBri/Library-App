@@ -1,10 +1,32 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { reservationApi } from '../../reservations/reservationApi';
 import type {
   InfiniteReservationsModel,
   ReservationModel,
   UseChangeReservationStatusResponse,
 } from './types';
+
+export const updateReservationsCache = (
+  queryClient: QueryClient,
+  payload: ReservationModel,
+  key: string
+) => {
+  queryClient.setQueriesData<InfiniteReservationsModel>(
+    { queryKey: [key], exact: false },
+    (oldData) => {
+      if (!oldData) return oldData;
+      const newPages = oldData.pages.map((page) => ({
+        ...page,
+        items: page.items.map((r) => (r.id === payload.id ? payload : r)),
+      }));
+      return { ...oldData, pages: newPages };
+    }
+  );
+};
 
 export const useChangeReservationStatus = (libraryId: number) => {
   const queryClient = useQueryClient();
@@ -19,17 +41,8 @@ export const useChangeReservationStatus = (libraryId: number) => {
       payload: ReservationModel,
       response: UseChangeReservationStatusResponse
     ) => {
-      queryClient.setQueriesData<InfiniteReservationsModel>(
-        { queryKey: ['reservations'], exact: false },
-        (oldData) => {
-          if (!oldData) return oldData;
-          const newPages = oldData.pages.map((page) => ({
-            ...page,
-            items: page.items.map((r) => (r.id === payload.id ? payload : r)),
-          }));
-          return { ...oldData, pages: newPages };
-        }
-      );
+      updateReservationsCache(queryClient, payload, 'reservations');
+      updateReservationsCache(queryClient, payload, 'my-reservations');
 
       if (response.params.status !== 'rejected') {
         queryClient.setQueryData<InfiniteReservationsModel>(

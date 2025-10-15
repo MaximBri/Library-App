@@ -103,7 +103,6 @@ export const updateProfile = async (req: Request, res: Response) => {
 export const updateRole = async (req: Request, res: Response) => {
   const data = UpdateRoleInput.parse(req.body)
 
-  // Проверяем, что текущий пользователь - админ
   const currentUserRole = (req as any).userRole
   if (currentUserRole !== 'admin') {
     return res
