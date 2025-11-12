@@ -77,9 +77,9 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
     async (email: string, password: string) => {
       try {
         await api.post('/api/auth/register', { email, password });
-        await login(email, password);
-      } catch {
+      } catch(err) {
         notify('Ошибка при регистрации. Попробуйте еще раз.', 'error');
+        throw err;
       }
     },
     [login]

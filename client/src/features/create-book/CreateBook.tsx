@@ -5,12 +5,12 @@ import { bookFields, CreateBookSchema } from './constants';
 import { useCreateBook } from '@/shared/api/hooks/books/useCreateBook';
 import { useParams } from 'react-router-dom';
 import { useGetAuthors } from '@/shared/api/hooks/authors/useGetAuthors';
-import { authorApi } from '@/shared/api/authors/authorApi';
 import styles from './styles.module.scss';
 import { Modal } from '@/shared/components/Modal/Modal';
 import { FormBuilder } from '@/shared/components/FormBuilder/FormBuilder';
 import type { FormField } from '@/shared/components/FormBuilder/types';
 import { Input } from '@/shared/components/input/Input';
+import { useAddAuthor } from '@/shared/api/hooks/authors/useAddAuthor';
 
 export const CreateBook: FC<{
   isOpen: boolean;
@@ -42,6 +42,7 @@ const CreateBookFormWrapper: FC<{
   isLoading?: boolean;
 }> = ({ onCreate, isLoading }) => {
   const { data: authorsData } = useGetAuthors();
+  const { mutateAsync: createAuthor } = useAddAuthor();
   const authors = authorsData?.items || [];
 
   const ExtendedSchema = (CreateBookSchema as any).extend({
@@ -50,7 +51,8 @@ const CreateBookFormWrapper: FC<{
   });
 
   const authorOptions = authors.map(
-    (a: any) => `${a.surname} ${a.name}${a.patronymic ? ' ' + a.patronymic : ''}`
+    (a: any) =>
+      `${a.surname} ${a.name}${a.patronymic ? ' ' + a.patronymic : ''}`
   );
 
   const fields: FormField<CreateBookForm>[] = bookFields.flatMap((f) =>
@@ -58,38 +60,47 @@ const CreateBookFormWrapper: FC<{
       ? [
           {
             ...f,
-            render: (reg) => (
-              <div className={styles.authorField}>
-                <Input
-                  {...(reg as any)}
-                  options={authorOptions}
-                  placeholder="Фамилия Имя Отчество"
-                  className={styles.authorInput}
-                />
-              </div>
-            ),
+            render: (reg) => {
+              return (
+                <div className={styles.authorField}>
+                  <Input
+                    {...reg}
+                    options={authorOptions}
+                    placeholder="Фамилия Имя Отчество"
+                    className={styles.authorInput}
+                  />
+                </div>
+              );
+            },
           } as FormField<CreateBookForm>,
-          { name: 'newAuthor', label: 'Или добавьте нового автора', placeholder: 'Фамилия Имя Отчество' } as any,
         ]
       : [f]
   );
 
-  const handleSubmit = async (data: any) => {
-    if (data.newAuthor && String(data.newAuthor).trim()) {
-      const fio = String(data.newAuthor).trim().split(/\s+/);
-      const surname = fio[0] || '-';
-      const name = fio[1] || '-';
-      const patronymic = fio.length > 2 ? fio.slice(2).join(' ') : undefined;
-
-      const created = await authorApi.createAuthor({ name, surname, patronymic } as any);
-      data.author = String(created.id);
-    }
-
+  const handleSubmit = async (data: CreateBookForm) => {
     if (data.author && typeof data.author === 'string') {
       const matched = authors.find(
-        (a: any) => `${a.surname} ${a.name}${a.patronymic ? ' ' + a.patronymic : ''}` === data.author
+        (a: any) =>
+          `${a.surname} ${a.name}${a.patronymic ? ' ' + a.patronymic : ''}` ===
+          data.author
       );
-      if (matched) data.author = String(matched.id);
+      if (matched) {
+        data.author = String(matched.id);
+      } else {
+        const fio = String(data.author).trim().split(/\s+/);
+        const surname = fio[0] || '-';
+        const name = fio[1] || '-';
+        const patronymic = fio.length > 2 ? fio.slice(2).join(' ') : undefined;
+
+        const created = await createAuthor({
+          name,
+          surname,
+          patronymic,
+        })
+        console.log(created)
+        // const created = await authorApi.createAuthor();
+        // data.author = String(created.id);
+      }
     }
 
     onCreate(data);
@@ -97,7 +108,12 @@ const CreateBookFormWrapper: FC<{
 
   return (
     <div className={styles.createForm}>
-      <FormBuilder schema={ExtendedSchema} fields={fields} onSubmit={handleSubmit} isLoading={isLoading} />
+      <FormBuilder
+        schema={ExtendedSchema}
+        fields={fields}
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+      />
     </div>
   );
 };

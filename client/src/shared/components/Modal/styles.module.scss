@@ -11,7 +11,7 @@
   background: $bg-card-light;
   border-radius: 12px;
   box-shadow: $shadow-md;
-  max-width: 720px;
+  width: min(520px, 90vw);
   max-height: 90vh;
   overflow-y: auto;
   position: fixed;

@@ -26,7 +26,7 @@ export const useCreateBook = () => {
   return useMutation({
     mutationFn: async (bookData: CreateBookModel) =>
       await bookApi.createBook(bookData.libraryId, bookData),
-    onSuccess: (newBook: BookModel, bookData) => {
+    onSuccess: (newBook: BookModel, bookData: CreateBookModel) => {
       queryClient.setQueryData<InfiniteData<BooksResponse>>(
         ['libraryBooks', bookData.libraryId],
         (oldData) => {
