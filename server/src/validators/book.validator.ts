@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const CreateBookInput = z.object({
   name: z.string().min(1).max(500),
-  author: z.string().min(1).max(200),
+  authorId: z.number().int().positive(),
   isbn: z.string().min(1).max(50),
   type: z.enum(['book', 'magazine', 'newspaper', 'journal', 'other']),
   theme: z.string().min(1).max(200),
@@ -16,7 +16,7 @@ export const CreateBookInput = z.object({
 
 export const UpdateBookInput = z.object({
   name: z.string().min(1).max(500).optional(),
-  author: z.string().min(1).max(200).optional(),
+  authorId: z.number().int().positive().optional(),
   isbn: z.string().min(1).max(50).optional(),
   type: z
     .enum(['book', 'magazine', 'newspaper', 'journal', 'other'])

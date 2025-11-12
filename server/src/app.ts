@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/errorHandler'
 import { libraryRouter } from './routes/library'
 import { bookRouter } from './routes/book'
 import { reservationRouter } from './routes/reservation'
+import { authorRouter } from './routes/author'
 
 export const app = express()
 
@@ -41,6 +42,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/libraries', libraryRouter)
 app.use('/api/books', bookRouter)
 app.use('/api/reservations', reservationRouter)
+app.use('/api/authors', authorRouter)
 
 app.get('/health', (_req, res) => res.json({ ok: true }))
 

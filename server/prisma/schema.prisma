@@ -10,7 +10,6 @@ datasource db {
 
 model User {
   id            Int       @id @default(autoincrement())
-  readerId      Int?      
   email         String    @unique
   passwordHash  String
   role          String    @default("user")
@@ -37,6 +36,20 @@ model RefreshToken {
   @@index([tokenHash])
 }
 
+model Author {
+  id          Int      @id @default(autoincrement())
+  name        String
+  surname     String
+  patronymic  String?
+  description String?  @db.Text
+  birthYear   Int?
+  books       Book[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([surname, name])
+}
+
 model Library {
   id          Int      @id @default(autoincrement())
   name        String
@@ -53,7 +66,8 @@ model Library {
 model Book {
   id              Int      @id @default(autoincrement())
   name            String
-  author          String
+  authorId        Int
+  author          Author   @relation(fields: [authorId], references: [id], onDelete: Cascade)
   isbn            String
   type            String   
   theme           String
@@ -65,6 +79,7 @@ model Book {
   updatedAt       DateTime @updatedAt
 
   @@index([libraryId])
+  @@index([authorId])
   @@index([isbn])
 }
 

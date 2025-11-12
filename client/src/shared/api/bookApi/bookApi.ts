@@ -10,6 +10,7 @@ export const bookApi = {
     const { data } = await api.post(`/api/books`, {
       ...bookData,
       publishingYear: Number(bookData.publishingYear),
+      authorId: Number(bookData.author),
       libraryId,
     });
     return data;

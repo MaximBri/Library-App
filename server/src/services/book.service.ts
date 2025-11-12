@@ -4,7 +4,7 @@ const prisma = new PrismaClient()
 
 export async function createBook(data: {
   name: string
-  author: string
+  authorId: number
   isbn: string
   type: string
   theme: string
@@ -19,10 +19,18 @@ export async function createBook(data: {
     throw { status: 404, message: 'Library not found' }
   }
 
+  const author = await prisma.author.findUnique({
+    where: { id: data.authorId },
+  })
+
+  if (!author) {
+    throw { status: 404, message: 'Author not found' }
+  }
+
   const book = await prisma.book.create({
     data: {
       name: data.name,
-      author: data.author,
+      authorId: data.authorId,
       isbn: data.isbn,
       type: data.type,
       theme: data.theme,
@@ -30,6 +38,7 @@ export async function createBook(data: {
       libraryId: data.libraryId,
     },
     include: {
+      author: true,
       library: {
         select: {
           id: true,
@@ -47,6 +56,7 @@ export async function getBookById(id: number) {
   const book = await prisma.book.findUnique({
     where: { id },
     include: {
+      author: true,
       library: {
         select: {
           id: true,
@@ -89,6 +99,7 @@ export async function getBooks(params: {
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
     orderBy: { id: 'asc' },
     include: {
+      author: true,
       library: {
         select: {
           id: true,
@@ -131,7 +142,7 @@ export async function updateBook(
   id: number,
   data: {
     name?: string
-    author?: string
+    authorId?: number
     isbn?: string
     type?: string
     theme?: string
@@ -144,10 +155,21 @@ export async function updateBook(
     throw { status: 404, message: 'Book not found' }
   }
 
+  if (data.authorId) {
+    const author = await prisma.author.findUnique({
+      where: { id: data.authorId },
+    })
+
+    if (!author) {
+      throw { status: 404, message: 'Author not found' }
+    }
+  }
+
   const updated = await prisma.book.update({
     where: { id },
     data,
     include: {
+      author: true,
       library: {
         select: {
           id: true,
@@ -203,6 +225,7 @@ export async function getBooksByLibraryId(
     ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
     orderBy: { id: 'asc' },
     include: {
+      author: true,
       library: {
         select: {
           id: true,
