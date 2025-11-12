@@ -7,12 +7,17 @@ export const bookApi = {
     libraryId: number,
     bookData: CreateBookForm
   ): Promise<BookModel> => {
-    const { data } = await api.post(`/api/books`, {
+    const payload = {
       ...bookData,
       publishingYear: Number(bookData.publishingYear),
-      authorId: Number(bookData.author),
       libraryId,
-    });
+      ...(bookData.author ? { authorId: Number(bookData.author) } : {}),
+    } as any;
+
+    // strip raw `author` field if present
+    delete (payload as any).author;
+
+    const { data } = await api.post(`/api/books`, payload);
     return data;
   },
 
@@ -27,10 +32,15 @@ export const bookApi = {
   },
 
   editLibraryBook: async (bookId: number, bookData: CreateBookForm) => {
-    const { data } = await api.patch(`/api/books/${bookId}`, {
+    const payload = {
       ...bookData,
       publishingYear: Number(bookData.publishingYear),
-    });
+      ...(bookData.author ? { authorId: Number(bookData.author) } : {}),
+    } as any;
+
+    delete (payload as any).author;
+
+    const { data } = await api.patch(`/api/books/${bookId}`, payload);
     return data;
   },
 

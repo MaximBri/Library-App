@@ -4,12 +4,18 @@ import type { LibraryModel } from '@/shared/providers/types';
 export interface InfiniteBookList {
   nextCursor: number | null;
   hasMore: boolean;
-  items: BookModel;
+  items: BookModel[];
   library: LibraryModel;
 }
 
 export interface BookModel {
-  author: string;
+  author: {
+    id: number;
+    name: string;
+    surname: string;
+    patronymic?: string | null;
+    description?: string | null;
+  };
   createdAt: string;
   isbn: string;
   library: { id: number; name: string; address: string };

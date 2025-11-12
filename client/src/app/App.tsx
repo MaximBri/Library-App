@@ -42,8 +42,8 @@ function App() {
           },
         }}
       />
-      <AuthProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
           <Routes>
             <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
@@ -91,8 +91,8 @@ function App() {
               />
             </Route>
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }

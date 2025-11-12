@@ -83,7 +83,14 @@ export const reservationResponseSchema = z.object({
   book: z.object({
     id: z.number(),
     name: z.string(),
-    author: z.string(),
+    author: z.object({
+      id: z.number(),
+      name: z.string(),
+      surname: z.string(),
+      patronymic: z.string().nullable().optional(),
+      description: z.string().nullable().optional(),
+      birthYear: z.number().nullable().optional(),
+    }),
     isbn: z.string(),
     type: z.string(),
     theme: z.string(),

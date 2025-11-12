@@ -60,7 +60,7 @@ export const Book: FC<{ data: BookModel }> = ({ data }) => {
             <h3 id={`book-title-${data.id}`} className={styles['book__title']}>
               {data.name}
             </h3>
-            {/* <p className={styles['book__author']}>{data.author}</p> */}
+            <p className={styles['book__author']}>{`${data.author.surname} ${data.author.name}`}</p>
             <p className={styles['book__theme']}>{data.theme}</p>
           </div>
         </div>

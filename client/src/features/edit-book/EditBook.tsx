@@ -13,10 +13,10 @@ export const EditBook: FC<{
   handleClose: () => void;
 }> = ({ data, isOpen, handleClose }) => {
   const { mutate: updateBook, isPending } = useUpdateBook();
-  const { name, author, isbn, type, theme } = data;
+  const { name, isbn, type, theme } = data;
   const defaultValues = {
     name,
-    author,
+    author: String(data.author?.id ?? ''),
     isbn,
     type,
     theme,
@@ -29,7 +29,7 @@ export const EditBook: FC<{
       {
         onSuccess: () => {
           handleClose();
-          notify('Данные книги успешно обновлены', 'success')
+          notify('Данные книги успешно обновлены', 'success');
         },
       }
     );

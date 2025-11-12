@@ -10,6 +10,13 @@ import { useParams } from 'react-router-dom';
 import { notify } from '@/shared/utils/notify';
 import { useCancelReservation } from '@/shared/api/hooks/reservations/useCancelReservation';
 
+const formatAuthor = (author: any) => {
+  if (!author) return '';
+  return `${author.surname} ${author.name}${
+    author.patronymic ? ' ' + author.patronymic : ''
+  }`;
+};
+
 export const Reservation: FC<{
   data: ReservationModel;
   onStatusChanged?: () => void;
@@ -77,8 +84,8 @@ export const Reservation: FC<{
           <div className={styles.info}>
             <h2 className={styles.title}>Заявка №{data.id}</h2>
             <h3 className={styles.subtitle}>
-              {isLibrarian ? 'Хочет взять: ' : 'Хочу взять: '}«{data.book.name}»,
-              автор: {data.book.author}
+              {isLibrarian ? 'Хочет взять: ' : 'Хочу взять: '}«{data.book.name}
+              », автор: {formatAuthor(data.book.author)}
             </h3>
             <h4 className={styles.title}>
               На время:
@@ -142,7 +149,6 @@ export const Reservation: FC<{
 
       <StatusModal
         open={isModalOpen}
-        initialStatus={data.status}
         reservationId={data.id}
         onClose={handleClose}
         onSubmit={handleSubmit}

@@ -11,9 +11,13 @@ import { useGetUserData } from '../api/hooks/user/useGetUserData';
 import { useQueryClient } from '@tanstack/react-query';
 import { useGetMyLibrary } from '../api/hooks/libraries/useGetMyLibrary';
 import type { LibraryModel } from './types';
+import { notify } from '../utils/notify';
+import { useNavigate } from 'react-router-dom';
+import { APP_ROUTES } from '../routes';
 
 export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const [myLibrary, setMyLibrary] = useState<LibraryModel | null>(null);
@@ -55,17 +59,28 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [isError, queryClient]);
 
   const login = async (email: string, password: string) => {
-    await api.post(
-      '/api/auth/login',
-      { email, password },
-      { withCredentials: true }
-    );
-    refetch();
+    try {
+      await api.post(
+        '/api/auth/login',
+        { email, password },
+        { withCredentials: true }
+      );
+      refetch();
+      navigate(APP_ROUTES.HOME);
+    } catch (err) {
+      notify('Ошибка при входе. Проверьте данные и попробуйте снова.', 'error');
+      throw err;
+    }
   };
 
   const register = useCallback(
     async (email: string, password: string) => {
-      await api.post('/api/auth/register', { email, password });
+      try {
+        await api.post('/api/auth/register', { email, password });
+        await login(email, password);
+      } catch {
+        notify('Ошибка при регистрации. Попробуйте еще раз.', 'error');
+      }
     },
     [login]
   );

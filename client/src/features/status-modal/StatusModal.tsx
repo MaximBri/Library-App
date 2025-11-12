@@ -22,7 +22,6 @@ export interface UpdateReservationForm {
 
 export const StatusModal: FC<StatusModalProps> = ({
   open,
-  initialStatus,
   reservationId,
   onClose,
   onSubmit,

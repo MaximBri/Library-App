@@ -5,7 +5,7 @@ import { useAuth } from '../../shared/hooks/useAuth';
 import { Input } from '../../shared/components/input/Input';
 import { useNavigate } from 'react-router-dom';
 import { APP_ROUTES } from '@/shared/routes';
-import { useState, type FC } from 'react';
+import { useEffect, type FC } from 'react';
 import styles from './styles.module.scss';
 import { Button } from '../../shared/components/button/Button';
 
@@ -22,21 +22,16 @@ export const RegisterForm: FC = () => {
   const { register, handleSubmit, formState, getValues } = useForm<Form>({
     resolver: zodResolver(schema),
   });
-  const [error, setError] = useState<string>('');
 
   const onSubmit = async (data: Form) => {
-    try {
-      setError('');
-      await regFn(data.email, data.password);
-      navigate(APP_ROUTES.HOME);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || 'Ошибка при регистрации');
-    }
+    await regFn(data.email, data.password);
   };
 
-  if (user) {
-    navigate(APP_ROUTES.HOME);
-  }
+  useEffect(() => {
+    if (user) {
+      navigate(APP_ROUTES.HOME);
+    }
+  }, [user, navigate]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
@@ -51,7 +46,6 @@ export const RegisterForm: FC = () => {
         type="password"
         {...register('password')}
       />
-      {error && <span>{error}</span>}
       <Button
         type="submit"
         text="Зарегистрироваться"

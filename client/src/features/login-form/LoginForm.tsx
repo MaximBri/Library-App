@@ -25,12 +25,7 @@ export const LoginForm: FC = () => {
   });
 
   const onSubmit = async (data: Form) => {
-    try {
-      await login(data.email, data.password);
-      navigate(APP_ROUTES.HOME);
-    } catch (err) {
-      console.error(err);
-    }
+    await login(data.email, data.password);
   };
 
   if (user) {
