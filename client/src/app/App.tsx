@@ -12,7 +12,6 @@ import { Libraries } from '@/pages/libraries';
 import { LibraryPage } from '@/pages/library';
 import { UsersPage } from '@/pages/users';
 import { APP_ROLES } from '@/shared/constants';
-import { BooksPage } from '@/pages/books';
 import { ReservationsPage } from '@/pages/reservations';
 import { Toaster } from 'react-hot-toast';
 import { MyReservationsPage } from '@/pages/my-reservations';
@@ -81,9 +80,6 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-              </Route>
-              <Route path={APP_ROUTES.BOOKS}>
-                <Route index element={<BooksPage />} />
               </Route>
               <Route
                 path={APP_ROUTES.MY_RESERVATIONS}

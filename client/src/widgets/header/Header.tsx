@@ -13,12 +13,11 @@ export const Header = () => {
 
   return (
     <header className={styles['header']}>
-      <Link to={APP_ROUTES.HOME}>
-        <img src="/vite.svg" alt="logo" />
+      <Link to={APP_ROUTES.HOME} className={styles['header__logo']}>
+        <img src="/logo.png" alt="logo" />
       </Link>
       <nav className={styles['header__nav']}>
         <Link to={APP_ROUTES.LIBRARIES}>Библиотеки</Link>
-        <Link to={APP_ROUTES.BOOKS}>Книги</Link>
         {myLibrary && (
           <>
             <Link to={`${APP_ROUTES.LIBRARIES}/${myLibrary.id}`}>

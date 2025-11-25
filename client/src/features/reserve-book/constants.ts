@@ -118,7 +118,7 @@ export const reviewReservationSchema = z.object({
 export type ReviewReservationInput = z.infer<typeof reviewReservationSchema>;
 
 export const updateReservationStatusSchema = z.object({
-  status: z.enum(['approved', 'rejected', 'completed']),
+  status: z.string().min(1, 'Введите статус'),
   librarianComment: z
     .string()
     .max(1000, 'Комментарий не должен превышать 1000 символов')

@@ -4,7 +4,6 @@ export const APP_ROUTES = {
   LOGIN: '/login',
   LIBRARIES: '/libraries',
   USERS: '/users',
-  BOOKS: '/books',
   LK: '/lk',
   RESERVATIONS: 'reservations',
   MY_RESERVATIONS: 'my-reservations'

@@ -4,6 +4,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 0;
+  &__logo{
+    width: 40px;
+    height: 40px;
+  }
   &__nav {
     display: flex;
     gap: 20px;

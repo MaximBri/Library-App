@@ -9,14 +9,26 @@ import Input from '@/shared/components/input/Input';
 import { Modal } from '@/shared/components/Modal/Modal';
 import type { StatusModalProps } from './types';
 
-const STATUS_OPTIONS: UpdateReservationStatusInput['status'][] = [
-  'approved',
-  'rejected',
-  'completed',
+const STATUS_OPTIONS: {
+  text: string;
+  value: UpdateReservationStatusInput['status'];
+}[] = [
+  {
+    text: 'Одобрено',
+    value: 'approved',
+  },
+  {
+    text: 'Отклонено',
+    value: 'rejected',
+  },
+  {
+    text: 'Завершено',
+    value: 'completed',
+  },
 ];
 
 export interface UpdateReservationForm {
-  status: UpdateReservationStatusInput['status'];
+  status: string;
   librarianComment?: string;
 }
 
@@ -34,7 +46,7 @@ export const StatusModal: FC<StatusModalProps> = ({
       render: (reg: any) => (
         <Input
           {...reg}
-          options={STATUS_OPTIONS}
+          options={STATUS_OPTIONS.map((item) => item.text)}
           placeholder="Выберите статус"
         />
       ),
@@ -54,8 +66,12 @@ export const StatusModal: FC<StatusModalProps> = ({
   ];
 
   const handleSubmit = (data: UpdateReservationForm) => {
+    const status = STATUS_OPTIONS.find(
+      (item) => item.text === data.status
+    )?.value;
+    if (!status) return;
     onSubmit({
-      status: data.status,
+      status: status,
       librarianComment: data.librarianComment ? data.librarianComment : '',
     });
   };

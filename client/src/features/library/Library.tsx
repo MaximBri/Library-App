@@ -8,16 +8,15 @@ export const Library: FC<{ library: LibraryModel }> = ({ library }) => {
   const librarian = library.librarian;
 
   return (
-    <Link className={styles['library']} to={`/libraries/${library.id}`}>
-      <img
-        className={styles['library__image']}
-        src={librarySvg}
-        alt="library"
-      />
-      <div>
-        <h2 className={styles['library__name']}>{library.name}</h2>
-        <h3 className={styles['library__address']}>{library.address}</h3>
-        <h4 className={styles['library__librarian']}>
+    <Link className={styles.library} to={`/libraries/${library.id}`}>
+      <div className={styles.library__accent} aria-hidden="true" />
+      <div className={styles.library__image}>
+        <img src={librarySvg} alt="library" />
+      </div>
+      <div className={styles.library__main}>
+        <h2 className={styles.library__name}>{library.name}</h2>
+        <h3 className={styles.library__address}>{library.address}</h3>
+        <h4 className={styles.library__librarian}>
           Библиотекарь: <div>{`${librarian?.surname} ${librarian?.name}`}</div>
         </h4>
       </div>

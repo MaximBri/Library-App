@@ -7,9 +7,14 @@ import { Button } from '../../shared/components/button/Button';
 import ReserveBook from '../reserve-book/ReserveBook';
 import { useAuth } from '@/shared/hooks/useAuth';
 import EditSvg from './icons/edit.svg';
-import DeleteSvg from './icons/delete.svg';
+import DeleteSvg from '@/shared/icons/delete.svg';
 import { EditBook } from '../edit-book/EditBook';
 import { DeleteBook } from '../delete-book/DeleteBook';
+import {
+  BookTypeColors,
+  BookTypeMap,
+  type BookType,
+} from '../create-book/constants';
 
 export const Book: FC<{ data: BookModel }> = ({ data }) => {
   const { id } = useParams();
@@ -60,8 +65,16 @@ export const Book: FC<{ data: BookModel }> = ({ data }) => {
             <h3 id={`book-title-${data.id}`} className={styles['book__title']}>
               {data.name}
             </h3>
-            <p className={styles['book__author']}>{`${data.author.surname} ${data.author.name}`}</p>
+            <p
+              className={styles['book__author']}
+            >{`${data.author.surname} ${data.author.name}`}</p>
             <p className={styles['book__theme']}>{data.theme}</p>
+            <p
+              className={styles.book__typeBadge}
+              style={{ backgroundColor: BookTypeColors[data.type as BookType] }}
+            >
+              {BookTypeMap[data.type as BookType]}
+            </p>
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import { type FC, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import styles from './styles.module.scss';
+import DeleteSvg from '@/shared/icons/delete.svg';
 import type { ModalProps } from './types';
 
 export const Modal: FC<ModalProps> = ({
@@ -42,7 +43,7 @@ export const Modal: FC<ModalProps> = ({
               onClick={onClose}
               aria-label="Закрыть"
             >
-              ×
+              <img src={DeleteSvg} alt="close" />
             </button>
           </div>
         )}

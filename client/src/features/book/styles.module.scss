@@ -45,7 +45,17 @@
     z-index: 1;
     box-shadow: 0 0 18px rgba(124, 58, 237, 0.12);
   }
-
+  &__typeBadge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 12px;
+    color: #fff;
+    width: min-content;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
   &__link {
     display: flex;
     gap: 18px;

@@ -1,3 +1,8 @@
+import { Link } from "react-router-dom";
+
 export const Footer = () => {
-  return <footer>Footer</footer>;
+  return <footer>
+    Разработано
+    <Link to={''}>@Maxim_Bars</Link>
+  </footer>;
 };

@@ -1,8 +1,6 @@
-import CreateBook from '@/features/create-book/CreateBook';
 import { APP_ROLES } from '@/shared/constants';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useParams } from 'react-router-dom';
 import PlusSvg from '@/shared/icons/plus.svg';
 import styles from './styles.module.scss';
@@ -11,6 +9,7 @@ import { Button } from '@/shared/components/button/Button';
 import { Book } from '@/features/book/Book';
 import { EmptyList } from '@/features/empty-list/EmptyList';
 import { Loader } from '@/shared/components/loader/Loader';
+import { CreateBook } from '@/features/create-book/CreateBook';
 
 export const LibraryPage = () => {
   const { id } = useParams();
