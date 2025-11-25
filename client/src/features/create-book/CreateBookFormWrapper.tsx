@@ -1,7 +1,6 @@
 import { FormBuilder } from '@/shared/components/FormBuilder/FormBuilder';
 import type { FC } from 'react';
 import type { CreateBookForm } from './types';
-import useGetAuthors from '@/shared/api/hooks/authors/useGetAuthors';
 import { useAddAuthor } from '@/shared/api/hooks/authors/useAddAuthor';
 import {
   bookFields,
@@ -12,16 +11,17 @@ import {
 import type { FormField } from '@/shared/components/FormBuilder/types';
 import Input from '@/shared/components/input/Input';
 import styles from './styles.module.scss';
+import { useGetAuthorsInfinite } from '@/shared/api/hooks/authors/useGetAuthorsInfinite';
 
 export const CreateBookFormWrapper: FC<{
   onCreate: (data: CreateBookForm & { author?: string }) => void;
   isLoading?: boolean;
 }> = ({ onCreate, isLoading }) => {
-  const { data: authorsData } = useGetAuthors();
+  const { data: authorsData } = useGetAuthorsInfinite();
   const { mutateAsync: createAuthor } = useAddAuthor();
-  const authors = authorsData?.items || [];
-
-  const authorOptions = authors.map(
+  const authors = authorsData?.pages.flatMap((page) => page.items) || [];
+  console.log(authors)
+  const authorOptions = authors?.map(
     (a: any) =>
       `${a.surname} ${a.name}${a.patronymic ? ' ' + a.patronymic : ''}`
   );
@@ -81,7 +81,6 @@ export const CreateBookFormWrapper: FC<{
         data.author = String(created.id);
       }
     }
-
     onCreate(data);
   };
 

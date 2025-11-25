@@ -14,7 +14,7 @@ export const Header = () => {
   return (
     <header className={styles['header']}>
       <Link to={APP_ROUTES.HOME} className={styles['header__logo']}>
-        <img src="/logo.png" alt="logo" />
+        <img src="/logo.png" alt="logo" /> FrontCraft
       </Link>
       <nav className={styles['header__nav']}>
         <Link to={APP_ROUTES.LIBRARIES}>Библиотеки</Link>

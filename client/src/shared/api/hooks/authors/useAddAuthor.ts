@@ -9,12 +9,11 @@ export const useAddAuthor = () => {
     mutationFn: async (params: AuthorCreateModel) => await authorApi.createAuthor(params),
     onSuccess: (newAuthor: AuthorModel) => {
       queryClient.setQueriesData<AuthorsResponseCached>(
-        { queryKey: ['authors'], exact: false },
+        { queryKey: ['authors-infinite'], exact: false },
         (oldData) => {
           if (!oldData) return oldData;
-          console.log(oldData)
 
-          const firstPage = oldData.pages[0];
+          const firstPage = oldData.pages?.[0] || [];
           const newFirstPage = {
             ...firstPage,
             items: [newAuthor, ...firstPage.items],

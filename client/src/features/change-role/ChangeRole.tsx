@@ -8,6 +8,7 @@ import { Button } from '../../shared/components/button/Button';
 import { useUpdateUserRole } from '@/shared/api/hooks/user/useUpdateUserRole';
 import { useAuth } from '@/shared/hooks/useAuth';
 import styles from './styles.module.scss';
+import { notify } from '@/shared/utils/notify';
 
 export const ChangeRole = () => {
   const { user } = useAuth();
@@ -17,7 +18,14 @@ export const ChangeRole = () => {
   });
 
   const onSubmit = (data: UpdateUserRoleForm) => {
-    updateUserRole(data);
+    updateUserRole(data, {
+      onSuccess: () => {
+        notify('Роль пользователя обновлена!', 'success')
+      },
+      onError: () => {
+        notify('Ошибка при обновлении роли пользователя', 'error')
+      }
+    });
   };
 
   if (user?.role !== APP_ROLES.ADMIN) {
@@ -30,6 +38,7 @@ export const ChangeRole = () => {
       <form
         onSubmit={handleSubmit(onSubmit)}
         className={styles['change__form']}
+        autoComplete='off'
       >
         <Input
           {...register('id')}

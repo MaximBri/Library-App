@@ -6,6 +6,7 @@ import type { CreateLibraryForm } from './types';
 import { createLibrarySchema, libraryFields } from './constants';
 import { Modal } from '@/shared/components/Modal/Modal';
 import { FormBuilder } from '@/shared/components/FormBuilder/FormBuilder';
+import { notify } from '@/shared/utils/notify';
 
 export const CreateLibrary: FC<{
   isOpen: boolean;
@@ -20,8 +21,12 @@ export const CreateLibrary: FC<{
   const onSubmit = (data: CreateLibraryForm) => {
     createLibrary(data, {
       onSuccess: () => {
+        notify('Библиотека создана успешно', 'success');
         reset();
         handleClose();
+      },
+      onError: () => {
+        notify('Ошибка при создании библиотеки', 'error');
       },
     });
   };

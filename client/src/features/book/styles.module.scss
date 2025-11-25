@@ -46,7 +46,7 @@
     box-shadow: 0 0 18px rgba(124, 58, 237, 0.12);
   }
   &__typeBadge {
-    display: inline-block;
+    display: inline;
     padding: 4px 10px;
     font-size: 12px;
     font-weight: 600;
@@ -55,7 +55,9 @@
     width: min-content;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    white-space: nowrap;
   }
+
   &__link {
     display: flex;
     gap: 18px;
@@ -97,6 +99,7 @@
     gap: 6px;
     min-width: 0;
     z-index: 2;
+    flex-grow: 1;
   }
 
   &__title {

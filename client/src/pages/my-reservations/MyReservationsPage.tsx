@@ -25,8 +25,8 @@ export const MyReservationsPage = () => {
   if (isLoading) {
     return <Loader />;
   }
-
-  if (!reservations) {
+  
+  if (!reservations?.length) {
     return <EmptyList title="У вас нет бронирований" />;
   }
 

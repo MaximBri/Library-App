@@ -1,0 +1,14 @@
+.footer {
+  text-align: center;
+  width: 100%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid $border;
+  height: 40px;
+  gap: 10px;
+  &__link {
+    text-decoration: underline;
+  }
+}
