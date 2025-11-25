@@ -9,6 +9,7 @@ import { libraryRouter } from './routes/library'
 import { bookRouter } from './routes/book'
 import { reservationRouter } from './routes/reservation'
 import { authorRouter } from './routes/author'
+import { reportRouter } from './routes/report'
 
 export const app = express()
 
@@ -43,6 +44,7 @@ app.use('/api/libraries', libraryRouter)
 app.use('/api/books', bookRouter)
 app.use('/api/reservations', reservationRouter)
 app.use('/api/authors', authorRouter)
+app.use('/api/reports', reportRouter)
 
 app.get('/health', (_req, res) => res.json({ ok: true }))
 
