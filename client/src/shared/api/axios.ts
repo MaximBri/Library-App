@@ -4,7 +4,7 @@ import axios, {
   type AxiosRequestConfig,
 } from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 type FailedRequest = {
   resolve: (value?: unknown) => void;

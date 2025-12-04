@@ -7,8 +7,19 @@ import {
 
 const prisma = new PrismaClient()
 
-export async function getBookPopularityReport(params: BookPopularityReportInput) {
-  const { startDate, endDate, status, libraryId, authorId, theme, sortBy, sortOrder } = params
+export async function getBookPopularityReport(
+  params: BookPopularityReportInput
+) {
+  const {
+    startDate,
+    endDate,
+    status,
+    libraryId,
+    authorId,
+    theme,
+    sortBy,
+    sortOrder,
+  } = params
 
   const reservationWhere: any = {
     createdAt: {
@@ -32,35 +43,18 @@ export async function getBookPopularityReport(params: BookPopularityReportInput)
     where: bookWhere,
     include: {
       author: true,
-      library: {
-        include: {
-          librarian: {
-            select: {
-              name: true,
-              surname: true,
-            },
-          },
-        },
-      },
-      Reservation: {
-        where: reservationWhere,
-        include: {
-          user: {
-            select: {
-              name: true,
-              surname: true,
-            },
-          },
-        },
-      },
+      library: true,
+      Reservation: true,
     },
     orderBy: getBookPopularityOrderBy(sortBy, sortOrder),
   })
 
-  const report = books.map(book => {
+  const report = books.map((book) => {
     const reservations = book.Reservation
     const totalBookReservations = reservations.length
-    const completedRentals = reservations.filter(r => r.status === 'returned').length
+    const completedRentals = reservations.filter(
+      (r) => r.status === 'returned'
+    ).length
     const avgRentalDays = calculateAvgRentalDays(reservations)
 
     return {
@@ -73,10 +67,13 @@ export async function getBookPopularityReport(params: BookPopularityReportInput)
       totalReservations: totalBookReservations,
       completedRentals: completedRentals,
       avgRentalDays: avgRentalDays,
-      percentageOfTotal: totalReservations > 0 ? (totalBookReservations / totalReservations) * 100 : 0,
-      reservations: reservations.map(r => ({
+      percentageOfTotal:
+        totalReservations > 0
+          ? (totalBookReservations / totalReservations) * 100
+          : 0,
+      reservations: reservations.map((r) => ({
         id: r.id,
-        user: r.user.name && r.user.surname ? `${r.user.name} ${r.user.surname}` : 'Unknown',
+        userId: r.userId,
         status: r.status,
         startDate: r.requestedStartDate,
         endDate: r.requestedEndDate,
@@ -101,8 +98,18 @@ export async function getBookPopularityReport(params: BookPopularityReportInput)
   }
 }
 
-export async function getLibraryActivityReport(params: LibraryActivityReportInput) {
-  const { startDate, endDate, status, libraryId, librarianId, sortBy, sortOrder } = params
+export async function getLibraryActivityReport(
+  params: LibraryActivityReportInput
+) {
+  const {
+    startDate,
+    endDate,
+    status,
+    libraryId,
+    librarianId,
+    sortBy,
+    sortOrder,
+  } = params
 
   const libraryWhere: any = {}
   if (libraryId) libraryWhere.id = libraryId
@@ -146,44 +153,64 @@ export async function getLibraryActivityReport(params: LibraryActivityReportInpu
     orderBy: getLibraryActivityOrderBy(sortBy, sortOrder),
   })
 
-  const report = libraries.map(library => {
-    const allReservations = library.books.flatMap(book => book.Reservation)
-    const uniqueUsers = new Set(allReservations.map(r => r.userId)).size
-    const themes = library.books.reduce((acc: { [theme: string]: number }, book) => {
-      acc[book.theme] = (acc[book.theme] || 0) + book.Reservation.length
-      return acc
-    }, {})
-    const mostPopularTheme = Object.keys(themes).reduce((a, b) => themes[a] > themes[b] ? a : b, '')
+  const report = libraries.map((library) => {
+    const allReservations = library.books.flatMap((book) => book.Reservation)
+    const uniqueUsers = new Set(allReservations.map((r) => r.userId)).size
+    const themes = library.books.reduce(
+      (acc: { [theme: string]: number }, book) => {
+        acc[book.theme] = (acc[book.theme] || 0) + book.Reservation.length
+        return acc
+      },
+      {}
+    )
+    const mostPopularTheme = Object.keys(themes).reduce(
+      (a, b) => (themes[a] > themes[b] ? a : b),
+      ''
+    )
 
     const totalBooks = library.books.length
     const totalReservations = allReservations.length
-    const completedRentals = allReservations.filter(r => r.status === 'returned').length
+    const completedRentals = allReservations.filter(
+      (r) => r.status === 'returned'
+    ).length
     const avgRentalTime = calculateAvgRentalDays(allReservations)
 
     return {
       libraryId: library.id,
       libraryName: library.name,
       libraryAddress: library.address,
-      librarianName: library.librarian.name && library.librarian.surname 
-        ? `${library.librarian.name} ${library.librarian.surname}`
-        : 'Unknown',
+      librarianName:
+        library.librarian.name && library.librarian.surname
+          ? `${library.librarian.name} ${library.librarian.surname}`
+          : 'Unknown',
       totalBooks: totalBooks,
       totalReservations: totalReservations,
       uniqueUsers: uniqueUsers,
       mostPopularTheme: mostPopularTheme,
       avgRentalTime: avgRentalTime,
-      reservationToBookRatio: totalBooks > 0 ? (totalReservations / totalBooks) : 0,
-      completionRate: totalReservations > 0 ? (completedRentals / totalReservations) * 100 : 0,
+      reservationToBookRatio:
+        totalBooks > 0 ? totalReservations / totalBooks : 0,
+      completionRate:
+        totalReservations > 0
+          ? (completedRentals / totalReservations) * 100
+          : 0,
     }
   })
 
   const summary = {
     totalLibraries: report.length,
     totalBooks: report.reduce((sum, lib) => sum + lib.totalBooks, 0),
-    totalReservations: report.reduce((sum, lib) => sum + lib.totalReservations, 0),
-    avgRentalTime: report.reduce((sum, lib) => sum + lib.avgRentalTime, 0) / (report.length || 1),
-    mostActiveLibrary: report.reduce((max, lib) => 
-      lib.totalReservations > max.totalReservations ? lib : max, report[0] || null),
+    totalReservations: report.reduce(
+      (sum, lib) => sum + lib.totalReservations,
+      0
+    ),
+    avgRentalTime:
+      report.reduce((sum, lib) => sum + lib.avgRentalTime, 0) /
+      (report.length || 1),
+    mostActiveLibrary: report.reduce(
+      (max, lib) => (lib.totalReservations > max.totalReservations ? lib : max),
+      report[0] || null
+    ),
   }
 
   return {
@@ -228,24 +255,33 @@ export async function getUserActivityReport(params: UserActivityReportInput) {
     where: reservationWhere,
   })
 
-  const report = users.map(user => {
+  const report = users.map((user) => {
     const reservations = user.Reservation
     const totalUserReservations = reservations.length
-    const uniqueBooks = new Set(reservations.map(r => r.bookId)).size
-    const uniqueAuthors = new Set(reservations.map(r => r.book.authorId)).size
-    
-    const themes = reservations.reduce((acc: { [theme: string]: number }, r) => {
-      acc[r.book.theme] = (acc[r.book.theme] || 0) + 1
-      return acc
-    }, {})
-    const favoriteTheme = Object.keys(themes).reduce((a, b) => themes[a] > themes[b] ? a : b, '')
-    
-    const successfulReturns = reservations.filter(r => r.status === 'returned').length
+    const uniqueBooks = new Set(reservations.map((r) => r.bookId)).size
+    const uniqueAuthors = new Set(reservations.map((r) => r.book.authorId)).size
+
+    const themes = reservations.reduce(
+      (acc: { [theme: string]: number }, r) => {
+        acc[r.book.theme] = (acc[r.book.theme] || 0) + 1
+        return acc
+      },
+      {}
+    )
+    const favoriteTheme = Object.keys(themes).reduce(
+      (a, b) => (themes[a] > themes[b] ? a : b),
+      ''
+    )
+
+    const successfulReturns = reservations.filter(
+      (r) => r.status === 'returned'
+    ).length
     const avgRentalDays = calculateAvgRentalDays(reservations)
 
     return {
       userId: user.id,
-      userName: user.name && user.surname ? `${user.name} ${user.surname}` : 'Unknown',
+      userName:
+        user.name && user.surname ? `${user.name} ${user.surname}` : 'Unknown',
       userEmail: user.email,
       userRole: user.role,
       totalReservations: totalUserReservations,
@@ -254,20 +290,34 @@ export async function getUserActivityReport(params: UserActivityReportInput) {
       favoriteTheme: favoriteTheme,
       avgRentalDays: avgRentalDays,
       successfulReturns: successfulReturns,
-      activityPercentage: totalReservationsInPeriod > 0 
-        ? (totalUserReservations / totalReservationsInPeriod) * 100 
-        : 0,
-      successRate: totalUserReservations > 0 ? (successfulReturns / totalUserReservations) * 100 : 0,
+      activityPercentage:
+        totalReservationsInPeriod > 0
+          ? (totalUserReservations / totalReservationsInPeriod) * 100
+          : 0,
+      successRate:
+        totalUserReservations > 0
+          ? (successfulReturns / totalUserReservations) * 100
+          : 0,
     }
   })
 
   const summary = {
     totalUsers: report.length,
-    totalReservations: report.reduce((sum, user) => sum + user.totalReservations, 0),
-    avgReservationsPerUser: report.reduce((sum, user) => sum + user.totalReservations, 0) / (report.length || 1),
-    mostActiveUser: report.reduce((max, user) => 
-      user.totalReservations > max.totalReservations ? user : max, report[0] || null),
-    avgSuccessRate: report.reduce((sum, user) => sum + user.successRate, 0) / (report.length || 1),
+    totalReservations: report.reduce(
+      (sum, user) => sum + user.totalReservations,
+      0
+    ),
+    avgReservationsPerUser:
+      report.reduce((sum, user) => sum + user.totalReservations, 0) /
+      (report.length || 1),
+    mostActiveUser: report.reduce(
+      (max, user) =>
+        user.totalReservations > max.totalReservations ? user : max,
+      report[0] || null
+    ),
+    avgSuccessRate:
+      report.reduce((sum, user) => sum + user.successRate, 0) /
+      (report.length || 1),
   }
 
   return {
@@ -277,15 +327,17 @@ export async function getUserActivityReport(params: UserActivityReportInput) {
 }
 
 function calculateAvgRentalDays(reservations: any[]): number {
-  const validReservations = reservations.filter(r => 
-    r.status === 'returned' && r.returnedAt && r.requestedStartDate
+  const validReservations = reservations.filter(
+    (r) => r.status === 'returned' && r.returnedAt && r.requestedStartDate
   )
-  
+
   if (validReservations.length === 0) return 0
 
   const totalDays = validReservations.reduce((sum, r) => {
     const days = Math.ceil(
-      (new Date(r.returnedAt).getTime() - new Date(r.requestedStartDate).getTime()) / (1000 * 60 * 60 * 24)
+      (new Date(r.returnedAt).getTime() -
+        new Date(r.requestedStartDate).getTime()) /
+        (1000 * 60 * 60 * 24)
     )
     return sum + days
   }, 0)
@@ -299,14 +351,15 @@ function findMostPopularTheme(books: any[]): string {
     return acc
   }, {})
 
-  return Object.keys(themeCounts).reduce((a, b) => 
-    themeCounts[a] > themeCounts[b] ? a : b, ''
+  return Object.keys(themeCounts).reduce(
+    (a, b) => (themeCounts[a] > themeCounts[b] ? a : b),
+    ''
   )
 }
 
 function getBookPopularityOrderBy(sortBy: string, sortOrder: string) {
   const orderBy: any = {}
-  
+
   switch (sortBy) {
     case 'reservations':
       orderBy.Reservation = { _count: sortOrder }
@@ -323,13 +376,13 @@ function getBookPopularityOrderBy(sortBy: string, sortOrder: string) {
     default:
       orderBy.Reservation = { _count: 'desc' }
   }
-  
+
   return orderBy
 }
 
 function getLibraryActivityOrderBy(sortBy: string, sortOrder: string) {
   const orderBy: any = {}
-  
+
   switch (sortBy) {
     case 'reservations':
       orderBy.books = { Reservation: { _count: sortOrder } }
@@ -340,13 +393,13 @@ function getLibraryActivityOrderBy(sortBy: string, sortOrder: string) {
     default:
       orderBy.name = sortOrder
   }
-  
+
   return orderBy
 }
 
 function getUserActivityOrderBy(sortBy: string, sortOrder: string) {
   const orderBy: any = {}
-  
+
   switch (sortBy) {
     case 'reservations':
       orderBy.Reservation = { _count: sortOrder }
@@ -360,6 +413,6 @@ function getUserActivityOrderBy(sortBy: string, sortOrder: string) {
     default:
       orderBy.createdAt = sortOrder
   }
-  
+
   return orderBy
 }

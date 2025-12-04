@@ -9,3 +9,14 @@ export type StatusModalProps = {
   ) => void;
   isLoading?: boolean;
 };
+
+export interface UpdateReservationForm {
+  status: string;
+  librarianComment?: string;
+}
+
+
+export interface StatusOptionsModel{
+  text: string;
+  value: UpdateReservationStatusInput['status'];
+}

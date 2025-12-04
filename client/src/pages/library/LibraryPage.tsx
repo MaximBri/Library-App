@@ -10,6 +10,10 @@ import { Book } from '@/features/book/Book';
 import { EmptyList } from '@/features/empty-list/EmptyList';
 import { Loader } from '@/shared/components/loader/Loader';
 import { CreateBook } from '@/features/create-book/CreateBook';
+import { reportsApi } from '@/shared/api/reports/reportsApi';
+import { defaultReportParams } from './constants';
+import ExportSvg from '@/shared/icons/import.svg';
+import { GetReport } from '@/features/get-report/GetReport';
 
 export const LibraryPage = () => {
   const { id } = useParams();
@@ -18,11 +22,19 @@ export const LibraryPage = () => {
     useGetLibraryBooksInfinite(Number(id));
 
   const [isAddBookModalOpen, setIsAddBookModalOpen] = useState<boolean>(false);
+  const [isReportOpen, setIsReportOpen] = useState<boolean>(false);
+  const handleChangeReportModal = () => setIsReportOpen((prev) => !prev);
   const handleChangeBookModal = () => setIsAddBookModalOpen((prev) => !prev);
 
   const isAdmin = user?.role === APP_ROLES.ADMIN;
   const isOwner = user?.id === data?.pages?.[0]?.library?.librarian?.id;
   const books = data?.pages.flatMap((page) => page.items) || [];
+
+  const getBookPopularityReport = () => {
+    reportsApi.getBookPopularityReport(defaultReportParams);
+  };
+
+  console.log(isReportOpen)
 
   if (isLoading) {
     return <Loader />;
@@ -31,19 +43,30 @@ export const LibraryPage = () => {
   return (
     <section className={styles['page']}>
       <div className={styles['page__header']}>
-        <h1 className={styles['page__title']}>Книги библиотеки:</h1>
-        {(isAdmin || isOwner) && (
+        <div className={styles['page__header-wrapper']}>
+          <h1 className={styles['page__title']}>Книги библиотеки:</h1>
+          {(isAdmin || isOwner) && (
+            <button
+              className={styles['page__add-button']}
+              onClick={handleChangeBookModal}
+            >
+              <img
+                className={styles['page__add-button-icon']}
+                src={PlusSvg}
+                alt="add book"
+              />
+            </button>
+          )}
+        </div>
+        <div>
           <button
-            className={styles['page__add-button']}
-            onClick={handleChangeBookModal}
+            className={styles['page__report-button']}
+            onClick={handleChangeReportModal}
+            // onClick={getBookPopularityReport}
           >
-            <img
-              className={styles['page__add-button-icon']}
-              src={PlusSvg}
-              alt="add book"
-            />
+            <img src={ExportSvg} alt="export" />
           </button>
-        )}
+        </div>
       </div>
       {books.length ? (
         <ul className={styles['page__list']}>
@@ -66,6 +89,7 @@ export const LibraryPage = () => {
         isOpen={isAddBookModalOpen}
         handleClose={handleChangeBookModal}
       />
+      <GetReport isOpen={isReportOpen} handleClose={handleChangeReportModal} />
     </section>
   );
 };

@@ -2,11 +2,24 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  &__header{
+  &__header {
     display: flex;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
+    justify-content: space-between;
+    &-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+  }
+  &__report-button {
+    padding: 6px;
+    border-radius: 4px;
+    border: 2px solid $bg-dark;
+    & > img {
+      transform: scale(1.2);
+    }
   }
   &__add-button {
     &-icon {

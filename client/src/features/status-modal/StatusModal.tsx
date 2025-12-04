@@ -1,36 +1,12 @@
 import { type FC } from 'react';
 import styles from './styles.module.scss';
 import { FormBuilder } from '@/shared/components/FormBuilder/FormBuilder';
-import {
-  updateReservationStatusSchema,
-  type UpdateReservationStatusInput,
-} from '../reserve-book/constants';
+import { updateReservationStatusSchema } from '../reserve-book/constants';
 import Input from '@/shared/components/input/Input';
 import { Modal } from '@/shared/components/Modal/Modal';
-import type { StatusModalProps } from './types';
+import type { StatusModalProps, UpdateReservationForm } from './types';
+import { STATUS_OPTIONS } from './constants';
 
-const STATUS_OPTIONS: {
-  text: string;
-  value: UpdateReservationStatusInput['status'];
-}[] = [
-  {
-    text: 'Одобрено',
-    value: 'approved',
-  },
-  {
-    text: 'Отклонено',
-    value: 'rejected',
-  },
-  {
-    text: 'Завершено',
-    value: 'completed',
-  },
-];
-
-export interface UpdateReservationForm {
-  status: string;
-  librarianComment?: string;
-}
 
 export const StatusModal: FC<StatusModalProps> = ({
   open,
